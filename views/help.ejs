@@ -1,0 +1,100 @@
+<%- include('partials/header') %>
+   
+    <style>
+        /* Custom Styles */
+        .help-section {
+            position: relative;
+            border: 2px solid #F195B2;
+            border-radius: 8px;
+            margin: 20px 0;
+            padding: 20px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .help-section:hover {
+            transform: scale(1.05);
+        }
+
+        .help-content {
+            display: none;
+        }
+
+        .help-section:hover .help-content {
+            display: block;
+        }
+
+        .help-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .help-section p {
+            color: #333;
+        }
+    </style>
+</head>
+
+    <!-- Header Start -->
+    <div class="jumbotron jumbotron-fluid page-header" style="margin-bottom: 90px;">
+        <div class="container text-center py-5">
+            <h1 class="text-white display-3 mt-lg-5">Help Center</h1>
+            <div class="d-inline-flex align-items-center text-white">
+                <i class="fa fa-circle px-3"></i>
+                <p class="m-0">Help</p>
+            </div>
+        </div>
+    </div>
+    <!-- Header End -->
+
+    <!-- Help Content Start -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <h1 class="section-title position-relative mb-5 text-center">How can we help you?</h1>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="help-section">
+                        <div class="help-title">Account & Orders</div>
+                        <div class="help-content">
+                            <ul>
+                                <li><strong>How can I create an account?</strong> <br> You can create an account by clicking the 'Sign Up'. Fill in the required details, and you’ll be ready to enjoy our delicious milk teas!</li>
+                                <li><strong>Can I cancel or modify my order?</strong> <br> You can cancel or modify your order within 1 hour of placing it by contacting our support team.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="help-section">
+                        <div class="help-title">Payment & Delivery</div>
+                        <div class="help-content">
+                            <ul>
+                                <li><strong>What payment methods do you accept?</strong> <br> We accept cash, credit/debit cards, and various mobile payment methods.</li>
+                                <li><strong>How long does delivery take?</strong> <br> It usually depends on the distance of our area from your area.</li>
+                                <li><strong>Is there a delivery fee?</strong> <br> Yes, a small delivery fee may apply based on your location and order size. This fee is calculated at checkout.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="help-section">
+
+                    <div class="help-section">
+                        <div class="help-title">Contact Us</div>
+                        <div class="help-content">
+                            <p>If you have further questions or need personalized support, feel free to contact our support team through the following methods:</p>
+                            <ul>
+                                <li>Email: support@ilovemilktea.com</li>
+                                <li>Phone: +123 456 7890</li>
+                                <li>Social Media: Reach out via our Facebook or Instagram pages.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Help Content End -->
+
+<%- include('partials/footer') %>   
