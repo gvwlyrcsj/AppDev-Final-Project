@@ -79,3 +79,5 @@ exports.logout = (req, res) => {
         res.redirect('/sign-in'); // Redirect to sign-in page after logout
     });
 };
+
+

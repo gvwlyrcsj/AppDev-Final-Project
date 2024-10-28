@@ -1,22 +1,50 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../models/db'); // Import your database connection pool
+const cartController = require('../controllers/cartController');
+const Cart = require('../models/Cart'); // Import Cart model
 
-// Route to add product to cart
+// Route to get the user's cart
+router.get('/', cartController.getCart);
+
+// POST route to add item to cart
 router.post('/add', (req, res) => {
-    const { productId, userId } = req.body;
+    const { userId, productId, size, quantity } = req.body;
 
-    // SQL query to insert product into the cart table
-    const query = 'INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, 1)'; // Default quantity is 1 for simplicity
+    // Log received data
+    console.log("Received data:", { userId, productId, size, quantity });
 
-    pool.query(query, [userId, productId], (err, result) => {
-        if (err) {
-            console.error('Error adding product to cart: ', err);
-            return res.status(500).send('Internal Server Error');
-        }
+    // Price map based on size
+    const priceMap = { small: 59, medium: 69, large: 79, xl: 89 };
+    const price = priceMap[size];
 
-        res.redirect('/cart'); // Redirect to cart page after adding the product
-    });
+    // Check for valid size and price
+    if (!price) {
+        console.error("Invalid size selected:", size);
+        return res.status(400).json({ success: false, message: 'Invalid size selected.' });
+    }
+
+    // Add item to cart
+    Cart.addToCart(userId, productId, size, quantity, price)
+        .then(() => {
+            res.json({ success: true, message: "Product added to cart successfully!" });
+        })
+        .catch(error => {
+            console.error("Error adding to cart:", error);
+            res.status(500).json({ success: false, message: 'Error adding to cart.' });
+        });
 });
+
+// cartRoutes.js
+router.delete('/delete/:id', async (req, res) => {
+    try {
+        const itemId = req.params.id;
+        await Cart.removeItem(itemId);
+        res.json({ success: true });
+    } catch (error) {
+        console.error("Error deleting cart item:", error);
+        res.status(500).json({ success: false, message: 'Error deleting item.' });
+    }
+});
+
 
 module.exports = router;
