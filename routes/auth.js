@@ -38,6 +38,7 @@ router.get('/sign-in', authController.getSignIn); // Ensure this is correctly de
 // Sign-in route for handling form submission
 router.post('/sign-in', authController.signin); // Ensure this is correctly defined
 
+// Logout route with query parameter for refresh
 router.get('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -45,7 +46,7 @@ router.get('/logout', (req, res) => {
             return res.redirect('/'); // Redirect to home on error
         }
         res.clearCookie('connect.sid'); // Clear the session cookie
-        res.redirect('/sign-in'); // Redirect to home or login page after logout
+        res.redirect('/sign-in?loggedOut=true'); // Redirect to sign-in with a query parameter
     });
 });
 
