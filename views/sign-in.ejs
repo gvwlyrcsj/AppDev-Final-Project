@@ -1,40 +1,67 @@
 <%- include('partials/header') %>   
-    <style>
-        /* CSS to make the page non-scrollable */
-        body {
-            overflow: hidden; /* Prevent scrolling */
+<style>
+    body {
+        overflow: hidden; 
+    }
+
+    .signup-container {
+        max-width: 350px; 
+        margin: 20px auto; 
+        padding: 30px; 
+        background-color: #f8f9fa; 
+        border-radius: 8px; 
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+    }
+
+    .page-header {
+        padding-bottom: 50px; 
+    }
+
+    .signup-container h1 {
+        font-size: 1.6rem; 
+    }
+
+    @media (max-width: 768px) {
+        .signup-container {
+            max-width: 90%; 
+            margin: 20px auto; 
         }
-    </style>
+
+        .page-header {
+            padding-bottom: 30px; 
+        }
+    }
+
+    @media (max-width: 576px) {
+        .signup-container {
+            padding: 20px; 
+        }
+    }
+</style>
 </head>
 
 <body>
-    <!-- Header Start -->
     <div class="jumbotron jumbotron-fluid page-header" style="margin-bottom: 90px;">
         <div class="container text-center py-5">
-            <h1 class="text-white display-3 mt-lg-5">Sign UP</h1>
+            <h1 class="text-white display-3 mt-lg-5">Sign Up</h1>
             <div class="d-inline-flex align-items-center text-white">
                 <i class="fa fa-circle px-3"></i>
-                <p class="m-0">Sign In</p>
+                <p class="m-0">Log In</p>
             </div>
         </div>
     </div>
-    <!-- Header End -->
 
-    <!-- Sign Up Container Start -->
     <div class="signup-container">
-        <h1 class="mb-4">Log In</h1>
+        <h1 class="mb-4 text-center">Log In</h1>
         <form action="/sign-in" method="POST">
             <div class="form-group">
-                <label for="email">Email address</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email address" required>
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
             </div>
             <button type="submit" class="btn btn-primary btn-block">Log In</button>
         </form>
     </div>
-<!-- Sign In Container End -->
 
-<%- include('partials/footer') %>   
+<%- include('partials/footer') %>  
