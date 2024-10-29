@@ -1,24 +1,23 @@
 const express = require('express');
-const fileUpload = require('express-fileupload'); // Import the express-fileupload middleware
+const fileUpload = require('express-fileupload');
 const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const db = require('./models/db'); // Import your database connection pool
+const db = require('./models/db');
 const app = express();
 
 // Controllers and Routes
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/adminRoutes');
-const productRoutes = require('./routes/productRoutes'); // Import product routes
-const cartRoutes = require('./routes/cartRoutes'); // Import your cart routes
+const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
-// Set up middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(fileUpload());
 
 app.use(session({
-    secret: 'hanahgwykingsk', // Change this to a more secure secret in production
+    secret: 'hanahgwykingsk',
     resave: false,
     saveUninitialized: true
 }));
@@ -26,6 +25,18 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
+
+// Middleware to make session available in views
+app.use((req, res, next) => {
+    res.locals.session = req.session; // Make session available to views
+    next();
+});
+
+// Assuming username is stored in the session
+app.use((req, res, next) => {
+    res.locals.username = req.session.username || null;
+    next();
+  });  
 
 // Middleware to attach the db pool to each request
 app.use((req, res, next) => {
@@ -40,10 +51,10 @@ app.use('/', authRoutes);
 app.use('/', adminRoutes);
 
 // Product routes
-app.use('/product', productRoutes); // Use the product routes
+app.use('/product', productRoutes);
 
 // Access manageProduct directly without /admin prefix
-app.use('/manageProduct', require('./routes/manageProductRoutes')); // For managing products
+app.use('/manageProduct', require('./routes/manageProductRoutes'));
 
 // Add specific routes to access updateProduct and deleteProduct directly
 app.get('/addProduct', require('./controllers/manageProductController').getAddProduct);
@@ -77,10 +88,10 @@ app.get('/', (req, res) => {
 });
 
 // Add the cart routes below your product routes
-app.use('/cart', cartRoutes); // Use the cart routes
+app.use('/cart', cartRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`); // Corrected syntax for template literals
+    console.log(`Server is running on http://localhost:${PORT}`);
 });

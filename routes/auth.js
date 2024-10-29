@@ -38,4 +38,15 @@ router.get('/sign-in', authController.getSignIn); // Ensure this is correctly de
 // Sign-in route for handling form submission
 router.post('/sign-in', authController.signin); // Ensure this is correctly defined
 
+router.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            return res.redirect('/'); // Redirect to home on error
+        }
+        res.clearCookie('connect.sid'); // Clear the session cookie
+        res.redirect('/sign-in'); // Redirect to home or login page after logout
+    });
+});
+
 module.exports = router;

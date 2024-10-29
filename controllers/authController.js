@@ -43,7 +43,7 @@ exports.signin = (req, res) => {
 
     User.findByEmail(email, (error, existingUser) => {
         if (error) {
-            console.error('Error finding user by email:', error); // Log error
+            console.error('Error finding user by email:', error);
             return res.status(500).send('Server error');
         }
 
@@ -58,13 +58,14 @@ exports.signin = (req, res) => {
 
         // Set user session
         req.session.userId = existingUser.id;
+        req.session.username = existingUser.username;  // Store username in session
         req.session.role = existingUser.role;
 
         // Redirect based on user role
         if (existingUser.role === 'admin') {
-            res.redirect('/admin'); // Redirect to admin page if the user is an admin
+            res.redirect('/admin');
         } else {
-            res.redirect('/product'); // Redirect to product page if the user is a regular user
+            res.redirect('/product');
         }
     });
 };
