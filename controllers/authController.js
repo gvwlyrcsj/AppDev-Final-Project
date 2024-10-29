@@ -77,8 +77,11 @@ exports.logout = (req, res) => {
             console.error('Error destroying session:', error); // Log error
             return res.status(500).send('Server error');
         }
-        res.redirect('/sign-in'); // Redirect to sign-in page after logout
+
+        // Clear cookies
+        res.clearCookie('connect.sid'); // Replace with your session cookie name if different
+
+        // Redirect to sign-in page with a query parameter
+        res.redirect('/sign-in?loggedOut=true'); // Redirect with a query parameter
     });
 };
-
-

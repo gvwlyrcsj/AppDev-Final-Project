@@ -56,23 +56,34 @@
 </head>
 
 <body>
-    <!-- Topbar Start -->
-    <div class="container-fluid bg-primary py-3 d-none d-md-block">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
-                    <div class="d-inline-flex align-items-center">
-                    </div>
+<!-- Topbar Start -->
+<div class="container-fluid bg-primary py-3 d-none d-md-block">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-white px-3" href="/help">Help</a>
+                    <span class="text-white">|</span>
+                    <a class="text-white pl-3" href="/faq">FAQs</a>
                 </div>
-                <div class="col-md-6 text-center text-lg-right">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-white px-3" href="/log-out"></a>
-                    </div>
+            </div>
+            <div class="col-md-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <% if (username) { %>
+                        <span class="text-white px-3"> <%= username %></span>
+                        <span class="text-white">|</span>
+                        <a class="text-white pl-3" href="/logout">Logout</a>
+                    <% } else { %>
+                        <a class="text-white px-3" href="/sign-up">Sign Up</a>
+                        <span class="text-white">|</span>
+                        <a class="text-white pl-3" href="/sign-in">Login</a>
+                    <% } %>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Topbar End -->
+</div>
+<!-- Topbar End -->
 
     <!-- Navbar Start -->
     <div class="container-fluid position-relative nav-bar p-0">
@@ -88,14 +99,13 @@
                     <div class="navbar-nav ml-auto py-0">
                         <a href="/admin" class="nav-item nav-link active">Dashboard</a>
                         <a href="/manageProduct" class="nav-item nav-link">Manage Product</a>
-                        <a href="/feedback" class="nav-item nav-link">Feedback</a>
                     </div>
                     <a href="/" class="navbar-brand mx-5 d-none d-lg-block">
                         <h1 class="m-0 display-4 text-primary"><span class="text-secondary">i</span>LoveMilkTea</h1>
                     </a>
                     <div class="navbar-nav mr-auto py-0">
                         <a href="/adminAccount" class="nav-item nav-link">Account</a>
-                        <a href="/sign-in" class="nav-item nav-link">Log Out</a>
+                        <a href="/feedback" class="nav-item nav-link">Feedback</a>
                     </div>
                 </div>
             </nav>
