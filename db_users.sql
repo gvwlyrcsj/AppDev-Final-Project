@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3306
--- Generation Time: Oct 29, 2024 at 09:02 AM
--- Server version: 8.0.39
--- PHP Version: 8.2.13
+-- Host: localhost:3306
+-- Generation Time: Oct 29, 2024 at 11:37 PM
+-- Server version: 8.0.30
+-- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -27,24 +27,22 @@ SET time_zone = "+00:00";
 -- Table structure for table `addproducts`
 --
 
-DROP TABLE IF EXISTS `addproducts`;
-CREATE TABLE IF NOT EXISTS `addproducts` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `addproducts` (
+  `id` int NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `imageUrl` varchar(255) DEFAULT NULL,
-  `image` blob,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `image` blob
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `addproducts`
 --
 
 INSERT INTO `addproducts` (`id`, `name`, `description`, `price`, `imageUrl`, `image`) VALUES
-(1, 'Okinawa', 'MilkTea', 87.00, '/uploads/dvlx9u7plgi31.webp', NULL),
-(4, 'Wintermelon', 'MilkTea', 89.00, '/uploads/pngtree-pearl-milk-tea-pearl-drink-transparent-png-image_9059833.png', NULL);
+(1, 'Okinawa', 'MilkTea', '87.00', '/uploads/dvlx9u7plgi31.webp', NULL),
+(4, 'Wintermelon', 'MilkTea', '89.00', '/uploads/pngtree-pearl-milk-tea-pearl-drink-transparent-png-image_9059833.png', NULL);
 
 -- --------------------------------------------------------
 
@@ -52,18 +50,14 @@ INSERT INTO `addproducts` (`id`, `name`, `description`, `price`, `imageUrl`, `im
 -- Table structure for table `cart`
 --
 
-DROP TABLE IF EXISTS `cart`;
-CREATE TABLE IF NOT EXISTS `cart` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `cart` (
+  `id` int NOT NULL,
   `user_id` int NOT NULL,
   `product_id` int NOT NULL,
   `size` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `quantity` int NOT NULL DEFAULT '1',
-  `price` int NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `product_id` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `price` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `cart`
@@ -86,16 +80,14 @@ INSERT INTO `cart` (`id`, `user_id`, `product_id`, `size`, `quantity`, `price`) 
 -- Table structure for table `contacts`
 --
 
-DROP TABLE IF EXISTS `contacts`;
-CREATE TABLE IF NOT EXISTS `contacts` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `contacts` (
+  `id` int NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `subject` varchar(255) NOT NULL,
   `message` text NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `contacts`
@@ -110,19 +102,14 @@ INSERT INTO `contacts` (`id`, `name`, `email`, `subject`, `message`, `created_at
 -- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE IF NOT EXISTS `users` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `users` (
+  `id` int NOT NULL,
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'user',
-  `user_id` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`),
-  UNIQUE KEY `email` (`email`),
-  KEY `fk_users_user_info` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `user_id` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `users`
@@ -136,7 +123,9 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `user_id`) V
 (5, 'gwy', 'gwyneth@gmail.com', '$2b$10$YE1kXg..9r8Y6hubOB/Cn.2uW1uURiwYvkuJYWXGvEAu5EanS3tUa', 'user', NULL),
 (6, 'valerie', 'val@gmail.com', '$2b$10$MERw21XyCGccbo5g.eApEuW2IAzMTl39D3hVNhRkBHqft1TpzXRA2', 'admin', NULL),
 (7, 'brucal', 'brucal@gmail.com', '$2b$10$TgwIyWNHVmrOZ0Q9IszCa.0SEI9kPd2mSFgKgdAdjvQclhGzZ7O4i', NULL, NULL),
-(8, 'baek', 'baek@gmail.com', '$2b$10$y0stYaUGh1HOHGKcsLm3C.WQ3KmRKz93JHEZVp0QqfAWbmNPLdzay', NULL, NULL);
+(8, 'baek', 'baek@gmail.com', '$2b$10$y0stYaUGh1HOHGKcsLm3C.WQ3KmRKz93JHEZVp0QqfAWbmNPLdzay', NULL, NULL),
+(9, 'hanah', 'hanah@gmail.com', '$2b$10$joAtVGgikhFpGm8EPXMAnuLc8dwKQM4O.HvZAvr/Ym0wLjJJSfKKq', NULL, NULL),
+(10, 'deng', 'deng@gmail.com', '$2b$10$f7JQdgUlaUSpITptR0T/ZeQ4fjjLBusFe1IJIp/L3eNqt8da4UEHi', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -144,17 +133,82 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `user_id`) V
 -- Table structure for table `user_info`
 --
 
-DROP TABLE IF EXISTS `user_info`;
-CREATE TABLE IF NOT EXISTS `user_info` (
+CREATE TABLE `user_info` (
   `user_id` int NOT NULL,
-  `username` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `phone` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `address` text COLLATE utf8mb4_general_ci,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`user_id`)
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `addproducts`
+--
+ALTER TABLE `addproducts`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `cart`
+--
+ALTER TABLE `cart`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
+-- Indexes for table `contacts`
+--
+ALTER TABLE `contacts`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_users_user_info` (`user_id`);
+
+--
+-- Indexes for table `user_info`
+--
+ALTER TABLE `user_info`
+  ADD PRIMARY KEY (`user_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `addproducts`
+--
+ALTER TABLE `addproducts`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `cart`
+--
+ALTER TABLE `cart`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+
+--
+-- AUTO_INCREMENT for table `contacts`
+--
+ALTER TABLE `contacts`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables

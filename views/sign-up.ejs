@@ -1,73 +1,125 @@
-<%- include('partials/header') %>   
-<style>
-    body {
-        overflow: hidden; 
-    }
 
-    .signup-container {
-        max-width: 350px; 
-        margin: 20px auto; 
-        padding: 30px; 
-        background-color: #f8f9fa; 
-        border-radius: 8px; 
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
-    }
-
-    .page-header {
-        padding-bottom: 50px;
-    }
-
-    .signup-container h1 {
-        font-size: 1.6rem; 
-    }
-
-    @media (max-width: 768px) {
-        .signup-container {
-            max-width: 90%; 
-            margin: 20px auto; 
-        }
-
-        .page-header {
-            padding-bottom: 30px; 
-        }
-    }
-
-    @media (max-width: 576px) {
-        .signup-container {
-            padding: 20px; 
-        }
-    }
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>ILoveMilkTea-Signup</title>
 </head>
-
 <body>
-    <div class="jumbotron jumbotron-fluid page-header" style="margin-bottom: 90px;">
-        <div class="container text-center py-5">
-            <h1 class="text-white display-3 mt-lg-5">Sign Up</h1>
-            <div class="d-inline-flex align-items-center text-white">
-                <i class="fa fa-circle px-3"></i>
-                <p class="m-0">Log In</p>
+    <style>
+        body {
+            overflow: hidden; 
+        }
+    
+        .signup-container {
+            max-width: 350px; 
+            margin: 20px auto; 
+            padding: 30px; 
+            background-color: #f8f9fa; 
+            border-radius: 8px; 
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+        }
+    
+        .page-header {
+            padding-bottom: 50px;
+        }
+    
+        .signup-container h1 {
+            font-size: 1.6rem; 
+        }
+    
+        @media (max-width: 768px) {
+            .signup-container {
+                max-width: 90%; 
+                margin: 20px auto; 
+            }
+    
+            .page-header {
+                padding-bottom: 30px; 
+            }
+        }
+    
+        @media (max-width: 576px) {
+            .signup-container {
+                padding: 20px; 
+            }
+        }
+    </style>
+    </head>
+    <body>
+        <!-- Topbar Start -->
+            <div class="container-fluid bg-primary py-3 d-none d-md-block">
+
             </div>
+        <!-- Topbar End -->
+        
+        
+        <!-- Navbar Start -->
+            <div class="container-fluid position-relative nav-bar p-0">
+                <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
+                    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow p-lg-0">
+                        <a href="/" class="navbar-brand d-block d-lg-none">
+                            <h1 class="m-0 display-4 text-primary"><span class="text-secondary">i</span>Love MilkTea</h1>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                            <div class="navbar-nav ml-auto py-0">
+                                <a href="/about" class="nav-item nav-link active">About</a>
+                                <a href="/product" class="nav-item nav-link">Product</a>
+                                <a href="/Cart" class="nav-item nav-link">Cart</a>
+                            </div>
+                            <a href="/" class="navbar-brand mx-5 d-none d-lg-block">
+                                <h1 class="m-0 display-4 text-primary"><span class="text-secondary">i</span>LoveMilkTea</h1>
+                            </a>
+                            <div class="navbar-nav mr-auto py-0">
+                                <a href="/service" class="nav-item nav-link">Service</a>
+                                <a href="/gallery" class="nav-item nav-link">Gallery</a>
+                                <a href="/contact" class="nav-item nav-link">Contact</a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        <!-- Navbar End -->
+        
+    <body>
+        <div class="jumbotron jumbotron-fluid page-header" style="margin-bottom: 90px;">
+            <div class="container text-center py-5">
+                <div class="d-inline-flex align-items-center text-white">
+                    <i class="fa fa-circle px-3"></i>
+                </div>
+            </div>
+          
         </div>
-    </div>
+    
+        <div class="signup-container">
+            <h1 class="mb-4 text-center">Sign Up</h1>
+            <form action="/sign-up" method="POST">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Email address" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password (min. 8 characters)" minlength="8" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" minlength="8" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+            </form>
+            <p class="text-center mt-3">
+                Already have an account? <a href="/sign-in" class="text-primary">Sign In</a>
+            </p>
+        </div>  
+        
+        
+    
+</body>
+</html> 
 
-    <div class="signup-container">
-        <h1 class="mb-4 text-center">Sign Up</h1>
-        <form action="/sign-up" method="POST">
-            <div class="form-group">
-                <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
-            </div>
-            <div class="form-group">
-                <input type="email" class="form-control" id="email" name="email" placeholder="Email address" required>
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password (min. 8 characters)" minlength="8" required>
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" minlength="8" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
-        </form>
-    </div>    
-
-<%- include('partials/footer') %>  
