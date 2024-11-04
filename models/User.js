@@ -1,40 +1,52 @@
+// models/User.js
 const mysql = require('mysql2');
-const pool = require('./db'); 
+const pool = require('./db');
 const bcrypt = require('bcrypt');
 
-const User = {
-    // Method to create a new user in the database
-    create: (username, email, password, role, callback) => {
-        const hashedPassword = bcrypt.hashSync(password, 10); // Hash the password
-        const sql = 'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)';
-
-        try {
-            pool.query(sql, [username, email, hashedPassword, role], (error, results) => {
-                if (error) {
-                    console.error('Error inserting user:', error); // Log the error
-                    return callback(error);
-                }
-                callback(null, results); // Call the callback function with the results
+class User {
+    static findByEmail(email) {
+        const sql = 'SELECT id, username, email, password, role FROM users WHERE email = ?';
+        return new Promise((resolve, reject) => {
+            pool.query(sql, [email], (err, results) => {
+                if (err) return reject(err);
+                resolve(results[0] || null);
             });
-        } catch (error) {
-            console.error('Unexpected error:', error); // Log unexpected errors
-            callback(error);
-        }
-    },
-
-    // Method to find a user by email in the database
-    findByEmail: (email, callback) => {
-        const sql = 'SELECT * FROM users WHERE email = ?';
-
-        // Query the 'users' table to find a user by email
-        pool.query(sql, [email], (error, results) => {
-            if (error) {
-                console.error('Error finding user by email:', error); // Log the error for easier debugging
-                return callback(error);
-            }
-            callback(null, results[0]); // Return the first user found (if any)
         });
     }
-};
+
+    static create(username, email, password, role) {
+        return new Promise((resolve, reject) => {
+            bcrypt.hash(password, 10, (err, hashedPassword) => {
+                if (err) return reject(err);
+                
+                const sql = 'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)';
+                pool.query(sql, [username, email, hashedPassword, role], (error, results) => {
+                    if (error) return reject(error);
+                    resolve(results);
+                });
+            });
+        });
+    }
+    
+    static findById(id) {
+        const sql = 'SELECT id, username, email FROM users WHERE id = ?';
+        return new Promise((resolve, reject) => {
+            pool.query(sql, [id], (err, results) => {
+                if (err) return reject(err);
+                resolve(results[0] || null);
+            });
+        });
+    }
+    
+    static updateBasicInfo(id, username, email) {
+        const sql = 'UPDATE users SET username = ?, email = ? WHERE id = ?';
+        return new Promise((resolve, reject) => {
+            pool.query(sql, [username, email, id], (err, results) => {
+                if (err) return reject(err);
+                resolve(results);
+            });
+        });
+    }
+}
 
 module.exports = User;

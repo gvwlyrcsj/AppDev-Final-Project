@@ -7,7 +7,6 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link rel="stylesheet" href="/public/css/style.css">
     <meta content="I Love MilkTea" name="I Love MilkTea">
-    <meta content="I Love MilkTea" name="I Love MilkTea">
 
     <!-- Favicon -->
     <link href="img/logo.png" rel="icon">
@@ -39,19 +38,21 @@
                         <a class="text-white pl-3" href="/faq">FAQs</a>
                     </div>
                 </div>
-                <div class="col-md-6 text-center text-lg-right">
+            <div class="col-md-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+
                     <div class="d-inline-flex align-items-center">
-                        <% if (username) { %>
-                            <span class="text-white px-3"> <%= username %></span>
-                            <span class="text-white">|</span>
-                            <a class="text-white pl-3" href="/logout">Logout</a>
-                        <% } else { %>
-                            <a class="text-white px-3" href="/sign-up">Sign Up</a>
-                            <span class="text-white">|</span>
-                            <a class="text-white pl-3" href="/sign-in">Login</a>
-                        <% } %>
-                    </div>
+                    <% if (username) { %>
+                        <a class="text-white px-3" href="/userProfile/<%= token %>"><%= username %></a>                        <span class="text-white">|</span>
+                        <a class="text-white pl-3" href="/logout">Logout</a>
+                    <% } else { %>
+                        <a class="text-white px-3" href="/sign-up">Sign Up</a>
+                        <span class="text-white">|</span>
+                        <a class="text-white pl-3" href="/sign-in">Login</a>
+                    <% } %>
                 </div>
+                </div>
+            </div>
             </div>
         </div>
     </div>

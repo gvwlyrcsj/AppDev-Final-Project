@@ -36,7 +36,7 @@ exports.findById = (id, callback) => {
 
 // Update an existing product
 exports.update = (id, name, description, price, imageUrl, callback) => {
-    let sql = 'UPDATE addproducts SET name = ?, description = ?, price = ?'; // Correct table name
+    let sql = 'UPDATE addproducts SET name = ?, description = ?, price = ?'; 
     const params = [name, description, price];
 
     if (imageUrl) {

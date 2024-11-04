@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-// Middleware to ensure user is an admin
+// Middleware to check if the user is an admin
 const ensureAdmin = (req, res, next) => {
     if (req.session.userId && req.session.role === 'admin') {
-        next(); // User is an admin, proceed to the next middleware
+        next(); // User is admin, allow access
     } else {
-        res.status(403).send('Access Denied'); // User is not an admin, send access denied
+        res.redirect('/sign-in?accessDenied=true'); // Redirect to sign-in with an accessDenied flag
     }
 };
 
