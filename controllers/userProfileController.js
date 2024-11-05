@@ -2,6 +2,7 @@ const User = require('../models/User');
 const UserProfile = require('../models/UserProfile');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+
 const createToken = (userId) => {
     return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
@@ -15,10 +16,17 @@ const decodeToken = (token) => {
     }
 };
 
+// Define barangay list based on city for dropdown selection
+const barangays = {
+    calapan: ["Balingayan", "Balite", /* ... additional barangays */],
+    baco: ["Alag", "Bangkatan", /* ... additional barangays */],
+    // Add other cities and barangays
+};
+
 exports.getUserProfileById = async (req, res) => {
-    const token = req.params.token; // Get token from URL
-    const userId = decodeToken(token); // Decode token to get user ID
-    
+    const token = req.params.token;
+    const userId = decodeToken(token);
+
     if (!userId) {
         return res.status(403).send('Invalid or expired token');
     }
@@ -34,6 +42,7 @@ exports.getUserProfileById = async (req, res) => {
         res.render('userProfile', {
             user,
             profile,
+            barangays, // Pass barangays for dropdowns
             userId: req.session.userId,
             username: req.session.username
         });
@@ -43,10 +52,21 @@ exports.getUserProfileById = async (req, res) => {
     }
 };
 
-// Upsert profile data and handle file upload
 exports.upsertProfile = async (req, res) => {
     const userId = req.session.userId;
-    const { username, email, name, phone, address, gender, birthday } = req.body;
+    const {
+        username,
+        email,
+        name,
+        phone,
+        street_name,
+        city,
+        barangay,
+        zip_code,
+        gender,
+        birthday
+    } = req.body;
+
     let profilePicturePath;
 
     if (req.files && req.files.profile_picture) {
@@ -56,14 +76,37 @@ exports.upsertProfile = async (req, res) => {
         profilePicturePath = `/uploads/${profilePicture.name}`;
     } else {
         const existingProfile = await UserProfile.findProfileByUserId(userId);
-        profilePicturePath = existingProfile.profile_picture || '/path/to/default-picture.jpg';
+        profilePicturePath = existingProfile ? existingProfile.profile_picture : '/path/to/default-picture.jpg';
+    }
+
+    // Calculate age based on the provided birthday
+    let age;
+    if (birthday) {
+        const birthDate = new Date(birthday);
+        const today = new Date();
+        age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
     }
 
     try {
         await User.updateBasicInfo(userId, username, email);
-        await UserProfile.upsert(userId, { name, phone, address, gender, birthday, profile_picture: profilePicturePath });
-        
-        // Generate token and redirect
+        await UserProfile.upsert(userId, {
+            name,
+            phone,
+            street_name,
+            city,
+            barangay,
+            zip_code,
+            gender,
+            birthday,
+            age,
+            profile_picture: profilePicturePath
+        });
+
+        // Generate a new token and redirect
         const token = createToken(userId);
         res.redirect(`/userProfile/${token}`);
     } catch (error) {

@@ -1,0 +1,66 @@
+<%- include('partials/header') %>   
+
+<div class="container py-5" style="max-width: 600px;">
+    <div class="card shadow">
+        <div class="card-header text-center bg-primary text-white">
+            <h3>Receipt</h3>
+        </div>
+        <div class="card-body p-4">
+            <h5 class="text-center mb-4">Thank you for your purchase!</h5>
+
+            <% if (cartItems.length === 0) { %>
+                <div class="text-center">
+                    <p>No items to checkout.</p>
+                    <a href="/cart" class="btn btn-primary">Return to Cart</a>
+                </div>
+            <% } else { %>
+                <table class="table table-borderless">
+                    <thead class="border-bottom">
+                        <tr>
+                            <th>Image</th>
+                            <th>Product Name</th>
+                            <th class="text-center">Size</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-right">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% cartItems.forEach(item => { %>
+                            <tr>
+                                <td>
+                                    <% if (item.imageUrl) { %>
+                                        <img src="<%= item.imageUrl %>" alt="<%= item.name %>" style="width: 60px; height: auto;">
+                                    <% } else { %>
+                                        <span>No image</span>
+                                    <% } %>
+                                </td>
+                                <td><%= item.name %></td>
+                                <td class="text-center"><%= item.size %></td>
+                                <td class="text-center"><%= item.quantity %></td>
+                                <td class="text-right">$<%= item.price %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                    <tfoot class="border-top">
+                        <tr>
+                            <th colspan="4" class="text-right">Total</th>
+                            <th class="text-right">$<%= total %></th>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="text-center mt-4">
+                    <form id="checkoutForm" action="/checkout/confirm" method="POST">
+                        <% cartItems.forEach(item => { %>
+                            <input type="hidden" name="items[]" value='<%= JSON.stringify(item) %>'>
+                        <% }) %>
+                        <button type="submit" class="btn btn-success btn-lg mr-2">Confirm</button>
+                        <a href="/cart" class="btn btn-danger btn-lg">Cancel</a>
+                    </form>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

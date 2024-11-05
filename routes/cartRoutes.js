@@ -1,17 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const cartController = require('../controllers/cartController');
-const Cart = require('../models/Cart'); // Import Cart model
+const Cart = require('../models/Cart'); 
 
 // Route to get the user's cart
 router.get('/', cartController.getCart);
-
+router.post('/checkout', cartController.checkout);
 // POST route to add item to cart
 router.post('/add', (req, res) => {
     const { userId, productId, size, quantity } = req.body;
-
-    // Log received data
-    console.log("Received data:", { userId, productId, size, quantity });
 
     // Price map based on size
     const priceMap = { small: 59, medium: 69, large: 79, xl: 89 };
@@ -34,7 +31,6 @@ router.post('/add', (req, res) => {
         });
 });
 
-// cartRoutes.js
 router.delete('/delete/:id', async (req, res) => {
     try {
         const itemId = req.params.id;
@@ -46,5 +42,22 @@ router.delete('/delete/:id', async (req, res) => {
     }
 });
 
+router.post('/checkoutSuccess', async (req, res) => {
+    const userId = req.session.userId;
+    const cartItems = req.session.cartItems; // Assume you are storing selected cart items in the session
+
+    if (!userId || !cartItems || cartItems.length === 0) {
+        return res.status(400).send('No items to checkout');
+    }
+
+    try {
+        await Cart.removeItems(cartItems.map(item => item.id));
+
+        res.render('checkoutSuccess', { cartItems, total: cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) });
+    } catch (error) {
+        console.error('Error during checkout:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 module.exports = router;

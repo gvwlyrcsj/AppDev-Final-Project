@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
-const Cart = require('../models/Cart'); // Ensure you have this model for cart operations
+const Cart = require('../models/Cart');
 
 // Function to fetch products from the database
 async function getProductsFromDatabase() {
-    const query = 'SELECT * FROM addproducts'; // Adjust this according to your table
+    const query = 'SELECT * FROM addproducts'; 
     return new Promise((resolve, reject) => {
         db.query(query, (err, results) => {
             if (err) {
@@ -20,7 +20,7 @@ async function getProductsFromDatabase() {
 // Route to render the product page
 router.get('/', async (req, res) => {
     try {
-        const addproduct = await getProductsFromDatabase(); // Fetch products from your database
+        const addproduct = await getProductsFromDatabase();
         const userId = req.session.userId; // Get userId from session
         res.render('product', { product: addproduct, userId: userId });
     } catch (error) {
@@ -36,7 +36,7 @@ router.post('/cart/add', async (req, res) => {
 
     // Check if user is logged in
     if (!userId) {
-        return res.redirect('/sign-up'); // Redirect to sign-up page if not logged in
+        return res.redirect('/sign-up'); 
     }
 
     // Check if all required data is present

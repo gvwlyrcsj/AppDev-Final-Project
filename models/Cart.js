@@ -50,8 +50,27 @@ function removeItem(itemId) {
     });
 }
 
+function getSelectedCartDetails(userId, selectedItems) {
+    const query = `
+        SELECT cart.id, addproducts.name, addproducts.imageUrl, cart.size, cart.quantity, cart.price
+        FROM cart
+        JOIN addproducts ON cart.product_id = addproducts.id
+        WHERE cart.user_id = ? AND cart.id IN (?);
+    `;
+    return new Promise((resolve, reject) => {
+        db.query(query, [userId, selectedItems], (error, results) => {
+            if (error) {
+                console.error("Error fetching selected cart details:", error);
+                return reject(error);
+            }
+            resolve(results);
+        });
+    });
+}
+
 module.exports = {
     addToCart,
     getCartDetails,
-    removeItem
+    removeItem,
+    getSelectedCartDetails
 };

@@ -84,6 +84,9 @@ app.use('/help', require('./routes/helpRoutes'));
 app.use('/service', require('./routes/serviceRoutes'));
 app.use('/feedback', require('./routes/feedbackRoutes'));
 
+const checkoutRoutes = require('./routes/checkoutRoutes');
+app.use('/checkout', checkoutRoutes);
+
 // Restrict access to product route
 app.get('/product', (req, res) => {
     if (req.session.userId) {
@@ -95,6 +98,17 @@ app.get('/product', (req, res) => {
 
 app.get('/', (req, res) => {
     res.redirect('/about');
+});
+
+const apiRoutes = require('./routes/api');
+app.use('/api', apiRoutes);
+app.get('/api/barangays', (req, res) => {
+    const city = req.query.city;
+    if (barangays[city]) {
+        res.json(barangays[city]);
+    } else {
+        res.status(404).json({ error: 'City not found' });
+    }
 });
 
 // Start the server
