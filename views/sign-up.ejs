@@ -98,6 +98,14 @@
     
         <div class="signup-container">
             <h1 class="mb-4 text-center">Sign Up</h1>
+        
+            <!-- Display Error Message -->
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-danger" role="alert">
+                    <%= error %>
+                </div>
+            <% } %>
+        
             <form action="/sign-up" method="POST">
                 <div class="form-group">
                     <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
@@ -116,9 +124,6 @@
             <p class="text-center mt-3">
                 Already have an account? <a href="/sign-in" class="text-primary">Sign In</a>
             </p>
-        </div>  
-        
-        
-    
-</body>
+        </div>
+    </body>
 </html> 

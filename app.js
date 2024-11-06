@@ -100,17 +100,6 @@ app.get('/', (req, res) => {
     res.redirect('/about');
 });
 
-const apiRoutes = require('./routes/api');
-app.use('/api', apiRoutes);
-app.get('/api/barangays', (req, res) => {
-    const city = req.query.city;
-    if (barangays[city]) {
-        res.json(barangays[city]);
-    } else {
-        res.status(404).json({ error: 'City not found' });
-    }
-});
-
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

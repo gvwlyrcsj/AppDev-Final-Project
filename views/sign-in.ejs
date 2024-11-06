@@ -91,6 +91,14 @@
     <!-- Login Form Start -->
     <div class="signup-container">
         <h1 class="mb-4 text-center">Log In</h1>
+
+        <!-- Display Error Message -->
+        <% if (error) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= error %>
+            </div>
+        <% } %>
+
         <form action="/sign-in" method="POST">
             <div class="form-group">
                 <input type="email" class="form-control" id="email" name="email" placeholder="Email address" required>

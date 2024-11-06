@@ -6,29 +6,32 @@ const Cart = require('../models/Cart');
 // Route to get the user's cart
 router.get('/', cartController.getCart);
 router.post('/checkout', cartController.checkout);
+
 // POST route to add item to cart
 router.post('/add', (req, res) => {
     const { userId, productId, size, quantity } = req.body;
 
-    // Price map based on size
     const priceMap = { small: 59, medium: 69, large: 79, xl: 89 };
     const price = priceMap[size];
 
-    // Check for valid size and price
     if (!price) {
         console.error("Invalid size selected:", size);
         return res.status(400).json({ success: false, message: 'Invalid size selected.' });
     }
 
-    // Add item to cart
-    Cart.addToCart(userId, productId, size, quantity, price)
-        .then(() => {
-            res.json({ success: true, message: "Product added to cart successfully!" });
-        })
-        .catch(error => {
-            console.error("Error adding to cart:", error);
-            res.status(500).json({ success: false, message: 'Error adding to cart.' });
-        });
+    try {
+        Cart.addToCart(userId, productId, size, quantity, price)
+            .then(() => {
+                return res.json({ success: true, message: "Product added to cart successfully!" });
+            })
+            .catch(error => {
+                console.error("Error adding to cart:", error);
+                return res.status(500).json({ success: false, message: 'Error adding to cart.' });
+            });
+    } catch (error) {
+        console.error("Unexpected error:", error);
+        return res.status(500).json({ success: false, message: 'Unexpected error occurred.' });
+    }
 });
 
 router.delete('/delete/:id', async (req, res) => {
@@ -44,7 +47,7 @@ router.delete('/delete/:id', async (req, res) => {
 
 router.post('/checkoutSuccess', async (req, res) => {
     const userId = req.session.userId;
-    const cartItems = req.session.cartItems; // Assume you are storing selected cart items in the session
+    const cartItems = req.session.cartItems; 
 
     if (!userId || !cartItems || cartItems.length === 0) {
         return res.status(400).send('No items to checkout');

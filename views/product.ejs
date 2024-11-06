@@ -1,113 +1,23 @@
 <%- include('partials/header') %>
+
 <br><br><br>
+
 <div class="container">
     <div class="row">
         <% product.forEach(product => { %>
-        <div class="col-lg-3 col-md-6 mb-4 pb-2 d-flex justify-content-center">
-            <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
-
-                <!-- Display price -->
-                <div class="bg-primary mt-n5 py-3" style="width: 80px;">
-                    <h4 class="font-weight-bold text-white mb-0">₱<span class="price">59</span></h4>
-                </div>
-
-                <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
-                    <img class="rounded-circle w-100 h-100" src="<%= product.imageUrl %>" style="object-fit: cover;">
-                </div>
-                <h5 class="font-weight-bold mb-4"><%= product.name %></h5>
-
-                <!-- Add to Cart Form -->
-                <form class="add-to-cart-form">
-                    <input type="hidden" name="productId" value="<%= product.id %>">
-                    <input type="hidden" name="userId" value="<%= userId %>">
-
-                    <!-- Size Selection -->
-                    <div class="form-group">
-                        <label for="size">Size:</label>
-                        <select class="form-control size-selector" name="size" required>
-                            <option value="small" selected>Small</option>
-                            <option value="medium">Medium</option>
-                            <option value="large">Large</option>
-                            <option value="xl">XL</option>
-                        </select>
+            <a href="/product/<%= product.id %>" class="col-lg-4 col-md-6 mb-5 pb-4 d-flex justify-content-center text-decoration-none text-dark"> 
+                <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-4" style="width: 100%; max-width: 300px;">
+                    <div class="bg-primary mt-n5 py-3" style="width: 100px;">
+                        <h4 class="font-weight-bold text-white mb-0">₱59</h4>
                     </div>
-
-                    <!-- Quantity Selection -->
-                    <div class="form-group">
-                        <label for="quantity">Quantity:</label>
-                        <input type="number" class="form-control" name="quantity" min="1" value="1" required>
+                    <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-4" style="width: 180px; height: 180px;">
+                        <img class="rounded-circle w-100 h-100" src="<%= product.imageUrl %>" style="object-fit: cover;">
                     </div>
-
-                    <!-- Add to Cart Button -->
-                    <button type="submit" class="btn btn-sm btn-secondary">Add to Cart</button>
-                </form>
-            </div>
-        </div>
+                    <h5 class="font-weight-bold mb-4"><%= product.name %></h5>
+                </div>
+            </a>
         <% }); %>
     </div>
 </div>
-
-<script>
-    document.querySelectorAll('.add-to-cart-form').forEach(form => {
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            const formData = new FormData(this);
-            const sizeSelector = this.querySelector('.size-selector');
-            const priceDisplay = this.closest('.product-item').querySelector('.price');
-            const selectedSize = sizeSelector.value;
-
-            // Determine the price based on the selected size
-            const priceMap = {
-                small: 59,
-                medium: 69,
-                large: 79,
-                xl: 89
-            };
-            const price = priceMap[selectedSize];
-
-            // Add the price to formData
-            formData.append('price', price);
-
-            // Fetch API call to add to cart
-            fetch('/cart/add', {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    alert('Product added to cart successfully!');
-                } else {
-                    alert('Failed to add product to cart.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while adding the product to the cart.');
-            });
-        });
-    });
-
-    // Update price dynamically based on size selection
-    document.querySelectorAll('.size-selector').forEach(selectElement => {
-        selectElement.addEventListener('change', function () {
-            const priceDisplay = this.closest('.product-item').querySelector('.price');
-            const selectedSize = this.value;
-            const priceMap = {
-                small: 59,
-                medium: 69,
-                large: 79,
-                xl: 89
-            };
-            priceDisplay.textContent = priceMap[selectedSize];
-        });
-    });
-</script>
 
 <%- include('partials/footer') %>
