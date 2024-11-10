@@ -69,7 +69,6 @@ exports.checkout = async (req, res) => {
     }
 };
 
-// Add this function to `checkoutController.js`
 async function addOrderItems(orderId, cartItems) {
     const orderItems = cartItems.map(item => [orderId, item.product_id, item.size, item.quantity, item.price]);
     console.log("Prepared order items for batch insert:", orderItems);

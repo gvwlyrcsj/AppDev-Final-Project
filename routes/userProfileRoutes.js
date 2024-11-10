@@ -11,15 +11,12 @@ const isAuthenticated = (req, res, next) => {
     res.redirect('/sign-in');
 };
 
-// Route to get user profile using token
 router.get('/:token', isAuthenticated, userProfileController.getUserProfileById);
 
-// Route to upsert user profile
 router.post('/upsert', isAuthenticated, userProfileController.upsertProfile);
 
 router.get('/checkoutsuccess', (req, res) => {
-    // Render the checkout success page
-    res.render('checkoutSuccess'); // Make sure you have a 'checkoutSuccess.ejs' view file in your views directory
+    res.render('checkoutSuccess'); 
 });
 
 router.post('/checkout/update-address', (req, res) => {
@@ -27,7 +24,6 @@ router.post('/checkout/update-address', (req, res) => {
 
     updateAddress(req.user.id, street_name, barangay, city, zip_code)
         .then(() => {
-            // Redirect to checkoutSuccess page after updating the address
             res.redirect('/checkoutSuccess');
         })
         .catch(err => {

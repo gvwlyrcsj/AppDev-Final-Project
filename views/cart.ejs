@@ -14,7 +14,7 @@
                 <table class="table table-bordered">
                     <thead class="bg-secondary text-white">
                         <tr>
-                            <th>Select</th>
+                            <th><input type="checkbox" id="select-all" /></th>
                             <th>Product</th>
                             <th>Product Name</th>
                             <th>Size</th>
@@ -64,53 +64,56 @@
 <!-- Cart Section End -->
 
 <script>
-    // Calculate total for selected items
+document.getElementById('select-all').addEventListener('change', (event) => {
+    const checked = event.target.checked;
     document.querySelectorAll('.item-select').forEach(checkbox => {
-        checkbox.addEventListener('change', updateSelectedTotal);
+        checkbox.checked = checked;
     });
+    updateSelectedTotal();
+});
 
-    function updateSelectedTotal() {
-        let selectedTotal = 0;
-        document.querySelectorAll('.item-select:checked').forEach(checkedBox => {
-            const row = checkedBox.closest('tr');
-            const totalPrice = parseFloat(row.querySelector('td:nth-child(7)').innerText.replace('$', ''));
-            selectedTotal += totalPrice;
-        });
-        document.getElementById('selectedTotal').textContent = selectedTotal.toFixed(2);
+// Calculate total for selected items
+document.querySelectorAll('.item-select').forEach(checkbox => {
+    checkbox.addEventListener('change', updateSelectedTotal);
+});
+
+function updateSelectedTotal() {
+    let selectedTotal = 0;
+    document.querySelectorAll('.item-select:checked').forEach(checkedBox => {
+        const row = checkedBox.closest('tr');
+        const totalPrice = parseFloat(row.querySelector('td:nth-child(7)').innerText.replace('$', ''));
+        selectedTotal += totalPrice;
+    });
+    document.getElementById('selectedTotal').textContent = selectedTotal.toFixed(2);
+}
+
+// Handle delete button
+document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const itemId = button.getAttribute('data-id');
+        fetch(`/cart/delete/${itemId}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.closest('tr').remove();
+                    alert('Item removed successfully.');
+                    updateSelectedTotal();
+                }
+            });
+    });
+});
+
+// Handle checkout button click
+document.getElementById('checkoutButton').addEventListener('click', () => {
+    const selectedIds = Array.from(document.querySelectorAll('.item-select:checked'))
+                            .map(checkbox => checkbox.value);
+    if (selectedIds.length === 0) {
+        alert('Please select at least one item to checkout.');
+        return;
     }
-
-    // Handle delete button
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const itemId = button.getAttribute('data-id');
-            fetch(`/cart/delete/${itemId}`, { method: 'DELETE' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        button.closest('tr').remove();
-                        alert('Item removed successfully.');
-                        updateSelectedTotal();
-                    }
-                });
-        });
-    });
-
-    // Handle checkout button click
-    document.getElementById('checkoutButton').addEventListener('click', () => {
-        const selectedIds = Array.from(document.querySelectorAll('.item-select:checked'))
-                                .map(checkbox => checkbox.value);
-
-        // Log selected items to check if they are properly selected
-        console.log("Selected Items:", selectedIds);
-
-        if (selectedIds.length === 0) {
-            alert('Please select at least one item to checkout.');
-            return;
-        }
-
-        document.getElementById('selectedItems').value = JSON.stringify(selectedIds);
-        document.getElementById('checkoutForm').submit();
-    });
+    document.getElementById('selectedItems').value = JSON.stringify(selectedIds);
+    document.getElementById('checkoutForm').submit();
+});
 </script>
 
 <%- include('partials/footer') %>   

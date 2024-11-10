@@ -103,6 +103,10 @@ app.get('/', (req, res) => {
     res.redirect('/about');
 });
 
+const orderRoutes = require('./routes/orderRoutes');
+
+app.use('/', orderRoutes);
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
