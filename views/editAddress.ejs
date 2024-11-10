@@ -1,0 +1,114 @@
+<%- include('partials/header') %>
+
+<div class="container py-5" style="max-width: 600px;">
+    <div class="card shadow">
+        <div class="card-header text-center bg-primary text-white">
+            <h3>Edit Shipping Address</h3>
+        </div>
+        <div class="card-body p-4">
+            <form action="/checkout/update-address" method="POST">
+                <div class="mb-3">
+                    <label for="street_name" class="form-label">Street Name</label>
+                    <input type="text" class="form-control" id="street_name" name="street_name" value="<%= profile.street_name %>" required>
+                </div>
+                <div class="form-group">
+                    <label for="barangay">Barangay:</label>
+                    <select class="form-control" name="barangay" id="barangay" required>
+                        <option value="" disabled>Select your barangay</option>
+                        <% if (barangays[profile.city]) { %>
+                            <% barangays[profile.city].forEach((b) => { %>
+                                <option value="<%= b %>" <%= b === profile.barangay ? 'selected' : '' %>><%= b %></option>
+                            <% }) %>
+                        <% } %>
+                    </select>
+                </div>
+            <div class="form-group">
+                    <label for="city">City:</label>
+                    <select class="form-control" name="city" id="city" required>
+                        <option value="" disabled selected>Select your city</option>
+                        <option value="calapan" <%= profile.city === 'calapan' ? 'selected' : '' %>>Calapan</option>
+                        <option value="baco" <%= profile.city === 'baco' ? 'selected' : '' %>>Baco</option>
+                        <option value="bansud" <%= profile.city === 'bansud' ? 'selected' : '' %>>Bansud</option>
+                        <option value="bongabong" <%= profile.city === 'bongabong' ? 'selected' : '' %>>Bongabong</option>
+                        <option value="bulalacao" <%= profile.city === 'bulalacao' ? 'selected' : '' %>>Bulalacao</option>
+                        <option value="mansalay" <%= profile.city === 'mansalay' ? 'selected' : '' %>>Mansalay</option>
+                        <option value="naujan" <%= profile.city === 'naujan' ? 'selected' : '' %>>Naujan</option>
+                        <option value="pinamalayan" <%= profile.city === 'pinamalayan' ? 'selected' : '' %>>Pinamalayan</option>
+                        <option value="pola" <%= profile.city === 'pola' ? 'selected' : '' %>>Pola</option>
+                        <option value="puertoGalera" <%= profile.city === 'puertoGalera' ? 'selected' : '' %>>Puerto Galera</option>
+                        <option value="roxas" <%= profile.city === 'roxas' ? 'selected' : '' %>>Roxas</option>
+                        <option value="sanTeodoro" <%= profile.city === 'sanTeodoro' ? 'selected' : '' %>>San Teodoro</option>
+                        <option value="socorro" <%= profile.city === 'socorro' ? 'selected' : '' %>>Socorro</option>
+                        <option value="victoria" <%= profile.city === 'victoria' ? 'selected' : '' %>>Victoria</option>
+                    </select>                
+                </div>
+            <div class="mb-3">
+                    <label for="zip_code" class="form-label">Zip Code</label>
+                    <input type="text" class="form-control" id="zip_code" name="zip_code" value="<%= profile.zip_code %>" required>
+                </div>
+                <div class="text-center">
+                    <a href="/checkoutSuccess" class="btn btn-primary">Save Address</a>                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+<script>
+    const barangays = {
+        calapan: ["Balingayan", "Balite", "Baruyan", "Batino", "Bayanan I", "Bayanan II", "Biga", "Bondoc", "Bucayao",
+            "Buhuan", "Bulusan", "Calero", "Camansihan", "Camilmil", "Canubing I", "Canubing II", "Comunal",
+            "Guinobatan", "Gulod", "Gutad", "Ibaba East", "Ibaba West", "Ilaya", "Lalud", "Lazareto", "Libis",
+            "Lumangbayan", "Mahal Na Pangalan", "Maidlang", "Malad", "Malamig", "Managpi", "Masipit", "Nag-Iba I",
+            "Nag-Iba II", "Navotas", "Pachoca", "Palhi", "Panggalaan", "Parang", "Patas", "Personas", "Puting Tubig",
+            "San Antonio", "San Rafael (formerly Salong)", "San Vicente Central", "San Vicente East", "San Vicente North",
+            "San Vicente South", "San Vicente West", "Sapul", "Silonay", "Santa Cruz", "Santa Isabel", "Santa Maria Village",
+            "Santa Rita", "Santo Niño", "Suqui", "Tawagan", "Tawiran", "Tibag", "Wawa"],
+        baco: ["Alag", "Bangkatan", "Baras (Mangyan Minority)", "Bayanan", "Burbuli", "Dulangan I", "Dulangan II", 
+            "Katuwiran I", "Katuwiran II", "Lantuyang (Mangyan Minority)", "Lumangbayan", "Malapad", "Mangangan I", 
+            "Mangangan II", "Mayabig", "Pambisan", "Poblacion", "Pulantubig", "PuticanCabulo", "San Andres", 
+            "San Ignacio", "Santa Cruz", "Santa Rosa I", "Santa Rosa II", "TabonTabon", "Tagumpay", "Water"],
+        bansud: ["Antipolo", "Aras-asan", "Bagumbayan", "Balay", "Bayan ng Bansud", "Cabangahan", "Dampulan", 
+            "Kalingatan", "Mababang Bato", "Magsaysay", "Managpi", "Napangan", "Pabilaan", "Poblacion", "Tagumpay"],
+        bongabong: ["Alag", "Bagumbayan", "Balay", "Bayanan", "Bignay", "Bongabong Proper", "Lalud", 
+            "Masaguitsit", "Marayag", "Mabanglas", "Mangyan", "Malunod", "Palhuan", "Poblacion", "San Isidro", "San Jose"],
+        bulalacao: ["Balcasan", "Bamboo", "Buli", "Bulalacao", "Dawis", "Dela Paz", "Gintong Silangan", 
+            "Hindang", "Ibayug", "Kalapagan", "Katribo", "Lamon", "Libas", "Lunhaw", "Mapagkumbaba", "Nag-iba", "Poblacion"],
+        mansalay: ["Bagumbayan", "Bansud", "Bongabong", "Bubog", "Caguya", "Canas", "Canubing", "Dumantay", 
+            "Gulod", "Mansalay", "Mapagkumbaba", "Poblacion", "San Antonio", "San Isidro"],
+        naujan: ["Bagumbayan", "Bangas", "Barangan", "Buhay", "Dugay", "Isabang", "Ibabang I", "Ibabang II", 
+            "Lagan", "Lapidan", "Maguin", "Marayag", "Mauway", "Muntinlupa", "Poblacion", "Punduhan"],
+        pinamalayan: ["Bagong Silang", "Bagumbayan", "Bansud", "Bongabong", "Calapan", "Calavite", "Dumantay", 
+            "Liitan", "Manganga", "Poblacion", "Pula", "San Vicente", "Silan", "Tabing Ilog"],
+        pola: ["Bagumbayan", "Baras", "Bato", "Boton", "Bugtong na Bato", "Dulongbayan", "Ilog", "Kapatagan", 
+            "Masaguitsit", "Mina", "Mundang", "Pagsanjan", "Palahang", "Poblacion", "Tabing Ilog", "Tagumpay"],
+        puertogalera: ["Bagumbayan", "Banilad", "Bayanan", "Bongabong", "Buli", "Calapan", "Dulangan", "Katuwiran", 
+            "Lagnas", "Mabuhay", "Manatad", "Manuel I", "Panganiban", "Poblacion", "San Antonio", "San Isidro"],
+        roxas: ["Antipolo", "Bailan", "Bunga", "Manga", "Manggahan", "Mapagkumbaba", "Poblacion", "San Juan", "Tabon"],
+        santeodoro: ["Antipolo", "Bagumbayan", "Bingag", "Buli", "Concepcion", "Dapdap", "Del Pilar", "Katuwiran", 
+            "Mahayag", "Magsaysay", "Malinao", "Marakitan", "Poblacion", "San Juan", "Santo Niño"],
+        socorro: ["Antipolo", "Batsanga", "Bagumbayan", "Buhay", "Concepcion", "Dolores", "Ibaba", "Kapatagan", 
+            "Maguin", "Malalim", "Manatad", "Poblacion", "Pulang Lupa"],
+        victoria: ["Bagumbayan", "Baras", "Buli", "Calero", "Cugman", "Del Pilar", "Dulangan", "Ibaba", 
+            "Manuel L. Quezon", "Marina", "Nag-Iba", "Nampicuan", "Poblacion"]
+    };
+
+    // Populate barangays based on city selection
+    document.getElementById('city').addEventListener('change', function () {
+        const selectedCity = this.value;
+        const barangaySelect = document.getElementById('barangay');
+
+        // Clear barangay options
+        barangaySelect.innerHTML = '<option value="" disabled>Select your barangay</option>';
+
+        // Populate barangays based on selected city
+        if (barangays[selectedCity]) {
+            barangays[selectedCity].forEach(function (barangay) {
+                const option = document.createElement('option');
+                option.value = barangay;
+                option.textContent = barangay;
+                barangaySelect.appendChild(option);
+            });
+        }
+    });
+</script>

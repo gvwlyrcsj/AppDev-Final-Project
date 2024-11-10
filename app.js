@@ -18,6 +18,7 @@ const userProfileRoutes = require('./routes/userProfileRoutes');
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.json()); 
 app.use(fileUpload());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -86,6 +87,8 @@ app.use('/feedback', require('./routes/feedbackRoutes'));
 
 const checkoutRoutes = require('./routes/checkoutRoutes');
 app.use('/checkout', checkoutRoutes);
+app.use('/profile', checkoutRoutes);
+
 
 // Restrict access to product route
 app.get('/product', (req, res) => {

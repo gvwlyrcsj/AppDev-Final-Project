@@ -10,6 +10,7 @@ router.post('/checkout', cartController.checkout);
 // POST route to add item to cart
 router.post('/add', (req, res) => {
     const { userId, productId, size, quantity } = req.body;
+    const parsedQuantity = parseInt(quantity, 10);
 
     const priceMap = { small: 59, medium: 69, large: 79, xl: 89 };
     const price = priceMap[size];
@@ -20,7 +21,7 @@ router.post('/add', (req, res) => {
     }
 
     try {
-        Cart.addToCart(userId, productId, size, quantity, price)
+        Cart.addToCart(userId, productId, size, parsedQuantity, price)
             .then(() => {
                 return res.json({ success: true, message: "Product added to cart successfully!" });
             })
@@ -54,8 +55,10 @@ router.post('/checkoutSuccess', async (req, res) => {
     }
 
     try {
+        // After the checkout is successful, clear items from the cart
         await Cart.removeItems(cartItems.map(item => item.id));
 
+        // Render the checkout success page with cart items and the total price
         res.render('checkoutSuccess', { cartItems, total: cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) });
     } catch (error) {
         console.error('Error during checkout:', error);

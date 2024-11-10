@@ -1,4 +1,149 @@
-<%- include('partials/adminHeader') %>   
+<%- include('partials/adminHeader') %>
 
+<style>
+    /* Basic reset */
+    body, h1, h2, h3, p {
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', sans-serif;
+    }
 
-<%- include('partials/adminFooter') %>   
+    /* General container */
+    .container {
+        width: 80%;
+        margin: 0 auto;
+        padding-top: 20px;
+    }
+
+    /* Dashboard header */
+    h1 {
+        text-align: center;
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Flex container for the four sections */
+    .dashboard-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 30px; /* Adds space between each item */
+        margin-bottom: 40px;
+    }
+
+    /* Individual section style */
+    .section {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: 23%; /* Adjust width to fit four items in a row */
+        text-align: center;
+    }
+
+    /* Earnings Section */
+    .earnings {
+        background-color: #f4f7fa;
+        color: #4CAF50;
+    }
+
+    .earnings h2 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+
+    .total-earnings h3 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Best Seller Section */
+    .best-seller h2 {
+        font-size: 1.8rem;
+        color: #FF5733;
+        margin-bottom: 20px;
+    }
+
+    .chart-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .chart img {
+        width: 100px; /* Image width */
+        height: auto;
+        border-radius: 8px;
+    }
+
+    .best-seller p {
+        font-size: 1.1rem;
+        color: #555;
+    }
+
+    /* Sales Section */
+    .sales h2 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+
+    .sales h3 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .sales p {
+        font-size: 1rem;
+        color: #777;
+    }
+</style>
+
+<div class="container">
+    <h1>Admin Dashboard</h1>
+
+    <!-- Dashboard Row -->
+    <div class="dashboard-row">
+        <!-- Total Earnings Section -->
+        <div class="section earnings">
+            <h2>Monthly Sales</h2>
+            <div class="total-earnings">
+                <h3>$1212</h3>
+            </div>
+        </div>
+
+        <!-- Daily Sales Section -->
+        <div class="section sales">
+            <h2>Daily Sales</h2>
+            <div class="sales">
+                <h3>$177</h3>
+                <p>Today's sales so far</p>
+            </div>
+        </div>
+
+        <!-- Weekly Sales Section -->
+        <div class="section sales">
+            <h2>Weekly Sales</h2>
+            <div class="sales">
+                <h3>$1035</h3>
+                <p>This week's sales</p>
+            </div>
+        </div>
+
+        <!-- Best Seller Section -->
+        <div class="section best-seller">
+            <h2>Best Seller: Wintermelon</h2>
+            <div class="chart-container">
+                <div class="chart">
+                    <!-- Updated image for Wintermelon -->
+                    <img src="/uploads/pngtree-pearl-milk-tea-pearl-drink-transparent-png-image_9059833.png" alt="Best Seller Wintermelon">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<%- include('partials/adminFooter') %>

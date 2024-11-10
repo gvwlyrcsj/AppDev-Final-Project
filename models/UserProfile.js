@@ -11,7 +11,7 @@ const UserProfile = {
                 phone = VALUES(phone), 
                 gender = VALUES(gender), 
                 birthday = VALUES(birthday),
-                age = VALUES(AGE),
+                age = VALUES(age),
                 profile_picture = VALUES(profile_picture),
                 street_name = VALUES(street_name),
                 city = VALUES(city),
@@ -39,6 +39,23 @@ const UserProfile = {
                 resolve(results[0] || {});
             });
         });
+    },
+
+    updateAddress: async (userId, addressData) => {
+        const query = `
+            UPDATE user_profile 
+            SET street_name = ?, barangay = ?, city = ?, zip_code = ? 
+            WHERE user_id = ?
+        `;
+        const values = [
+            addressData.street_name, 
+            addressData.barangay, 
+            addressData.city, 
+            addressData.zip_code, 
+            userId
+        ];
+
+        return db.promise().query(query, values);
     }
 };
 

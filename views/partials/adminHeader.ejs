@@ -69,15 +69,15 @@
             </div>
             <div class="col-md-6 text-center text-lg-right">
                 <div class="d-inline-flex align-items-center">
-                    <% if (username) { %>
-                        <span class="text-white px-3"> <%= username %></span>
-                        <span class="text-white">|</span>
-                        <a class="text-white pl-3" href="/logout">Logout</a>
-                    <% } else { %>
-                        <a class="text-white px-3" href="/sign-up">Sign Up</a>
-                        <span class="text-white">|</span>
-                        <a class="text-white pl-3" href="/sign-in">Login</a>
-                    <% } %>
+                    <div class="d-inline-flex align-items-center">
+                        <% if (username) { %>
+                            <a class="text-white px-3" href="/userProfile/<%= token %>"><%= username %></a>                        <span class="text-white">|</span>
+                            <a class="text-white pl-3" href="/logout">Logout</a>
+                        <% } else { %>
+                            <a class="text-white px-3" href="/sign-up">Sign Up</a>
+                            <span class="text-white">|</span>
+                            <a class="text-white pl-3" href="/sign-in">Login</a>
+                        <% } %>
                 </div>
             </div>
         </div>
@@ -111,4 +111,5 @@
             </nav>
         </div>
     </div>
+</div>
     <!-- Navbar End -->

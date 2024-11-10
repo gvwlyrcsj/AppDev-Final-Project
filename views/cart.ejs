@@ -99,10 +99,15 @@
     document.getElementById('checkoutButton').addEventListener('click', () => {
         const selectedIds = Array.from(document.querySelectorAll('.item-select:checked'))
                                 .map(checkbox => checkbox.value);
+
+        // Log selected items to check if they are properly selected
+        console.log("Selected Items:", selectedIds);
+
         if (selectedIds.length === 0) {
             alert('Please select at least one item to checkout.');
             return;
         }
+
         document.getElementById('selectedItems').value = JSON.stringify(selectedIds);
         document.getElementById('checkoutForm').submit();
     });

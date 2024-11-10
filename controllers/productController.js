@@ -1,60 +1,101 @@
 const Product = require('../models/Product');
+const path = require('path');
 
-exports.getProductList = (req, res) => {
-    Product.getAll((error, products) => {
-        if (error) {
-            console.error('Error fetching products:', error);
+// Display all products
+exports.getManageProducts = (req, res) => {
+    Product.getAll((err, products) => {
+        if (err) {
+            console.error('Error fetching products:', err);
             return res.status(500).send('Error fetching products');
         }
-        const userId = req.session.userId; // Get userId from session
-        res.render('product', { product: products, userId });
+        res.render('manageProduct', { products });
     });
 };
 
-exports.getProductDetails = (req, res) => {
+// Render the add product form
+exports.getAddProduct = (req, res) => {
+    res.render('addProduct');
+};
+
+// Handle adding a new product
+exports.postAddProduct = (req, res) => {
+    const { name, description, price } = req.body;
+    const image = req.files?.image;
+    let imageUrl = null;
+
+    if (image) {
+        imageUrl = `/uploads/${image.name}`;
+        const uploadPath = path.join(__dirname, '../public/uploads', image.name);
+
+        image.mv(uploadPath, (error) => {
+            if (error) {
+                return res.status(500).send('Error uploading image');
+            }
+            Product.create(name, description, price, imageUrl, (err) => {
+                if (err) {
+                    return res.status(500).send('Error adding product');
+                }
+                res.redirect('/manageProduct');
+            });
+        });
+    } else {
+        Product.create(name, description, price, imageUrl, (err) => {
+            if (err) {
+                return res.status(500).send('Error adding product');
+            }
+            res.redirect('/manageProduct');
+        });
+    }
+};
+
+// Render the update product form
+exports.getUpdateProduct = (req, res) => {
     const productId = req.params.id;
+
     Product.findById(productId, (error, product) => {
         if (error) {
-            console.error('Error fetching product:', error);
             return res.status(500).send('Error fetching product');
         }
-        res.render('productDetails', { product });
-    });
-};
-
-// Add new product
-exports.addProduct = (req, res) => {
-    const { name, description, price, imageUrl } = req.body;
-    Product.create(name, description, price, imageUrl, (error, results) => {
-        if (error) {
-            console.error('Error adding product:', error);
-            return res.status(500).send('Error adding product');
+        if (!product) {
+            return res.status(404).send('Product not found');
         }
-        res.redirect('/product');
+        res.render('updateProduct', { product });
     });
 };
 
-// Update a product
-exports.updateProduct = (req, res) => {
+// Handle updating an existing product
+exports.postUpdateProduct = (req, res) => {
     const productId = req.params.id;
-    const { name, description, price, imageUrl } = req.body;
-    Product.update(productId, name, description, price, imageUrl, (error, results) => {
-        if (error) {
-            console.error('Error updating product:', error);
-            return res.status(500).send('Error updating product');
-        }
-        res.redirect('/product');
-    });
+    const { name, description, price } = req.body;
+    const image = req.files?.image;
+
+    if (image) {
+        const imageUrl = `/uploads/${image.name}`;
+        const uploadPath = path.join(__dirname, '../public/uploads', image.name);
+
+        image.mv(uploadPath, (error) => {
+            if (error) {
+                return res.status(500).send('Error uploading image');
+            }
+            Product.update(productId, name, description, price, imageUrl)
+                .then(() => res.redirect('/manageProduct'))
+                .catch((err) => res.status(500).send('Error updating product'));
+        });
+    } else {
+        Product.update(productId, name, description, price, null)
+            .then(() => res.redirect('/manageProduct'))
+            .catch((err) => res.status(500).send('Error updating product'));
+    }
 };
 
-// Delete a product
+// Handle deleting a product
 exports.deleteProduct = (req, res) => {
     const productId = req.params.id;
-    Product.delete(productId, (error, results) => {
+
+    Product.delete(productId, (error) => {
         if (error) {
-            console.error('Error deleting product:', error);
             return res.status(500).send('Error deleting product');
         }
-        res.redirect('/product');
+        res.redirect('/manageProduct');
     });
 };

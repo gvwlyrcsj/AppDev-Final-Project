@@ -1,4 +1,32 @@
 <%- include('partials/header') %>
+<style>
+    .nav-bar::before {
+        background-color: #00b4d8;
+    }
+        .navbar-light .navbar-nav .nav-link:hover,
+        .navbar-light .navbar-nav .nav-link:focus {
+        color: #00b4d8;
+    }
+    
+    .bg-primary {
+        background-color: #00b4d8 !important;
+    }
+
+    .btn-secondary {
+        background-color: #00b4d8;
+        border-color: #00b4d8;
+    }
+
+    .btn-secondary:hover {
+        background-color: #00b4d8;
+        border-color: #00b4d8;
+    }
+
+    .btn-outline-light.btn-social:hover {
+        background-color: #00b4d8;
+        border-color: #00b4d8;
+    }
+    </style>
 
 <div class="container d-flex justify-content-center">
     <div class="profile-container" style="width: 100%; max-width: 800px;">
@@ -60,8 +88,8 @@
                         <label for="gender">Gender:</label>
                         <select class="form-control" name="gender" id="gender">
                             <option value="" disabled selected>Select your gender</option>
-                            <option value="male" <%= profile.gender === 'male' ? 'selected' : '' %>>Male</option>
-                            <option value="female" <%= profile.gender === 'female' ? 'selected' : '' %>>Female</option>
+                            <option value="Male" <%= profile.gender === 'Male' ? 'selected' : '' %>>Male</option>
+                            <option value="Female" <%= profile.gender === 'Female' ? 'selected' : '' %>>Female</option>
                         </select>
                     </div>
                 </div>
@@ -161,16 +189,17 @@
     };
 
     // Populate barangays based on city selection
-    document.getElementById('city').addEventListener('change', function () {
+    const citySelect = document.getElementById('city');
+    const barangaySelect = document.getElementById('barangay');
+
+    citySelect.addEventListener('change', function() {
         const selectedCity = this.value;
-        const barangaySelect = document.getElementById('barangay');
 
-        // Clear barangay options
-        barangaySelect.innerHTML = '<option value="" disabled>Select your barangay</option>';
+        // Clear previous barangay options
+        barangaySelect.innerHTML = '<option value="" disabled selected>Select your barangay</option>';
 
-        // Populate barangays based on selected city
         if (barangays[selectedCity]) {
-            barangays[selectedCity].forEach(function (barangay) {
+            barangays[selectedCity].forEach(function(barangay) {
                 const option = document.createElement('option');
                 option.value = barangay;
                 option.textContent = barangay;
@@ -178,6 +207,7 @@
             });
         }
     });
+
     // Calculate age based on birthday
     function calculateAge() {
         const birthdayInput = document.getElementById('birthday');
