@@ -87,8 +87,7 @@ app.use('/feedback', require('./routes/feedbackRoutes'));
 
 const checkoutRoutes = require('./routes/checkoutRoutes');
 app.use('/checkout', checkoutRoutes);
-app.use('/profile', checkoutRoutes);
-
+app.use('/profile', userProfileRoutes);
 
 // Restrict access to product route
 app.get('/product', (req, res) => {

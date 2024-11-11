@@ -1,6 +1,17 @@
 const Product = require('../models/Product');
 const path = require('path');
 
+exports.search = async (req, res) => {
+    const searchTerm = req.query.q || ''; // Get the search term from query params
+    try {
+        const products = await Product.searchByNameOrDescription(searchTerm);
+        res.json(products); // Respond with the search results as JSON
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        res.status(500).json({ error: 'Database query error' });
+    }
+};
+
 // Display all products
 exports.getManageProducts = (req, res) => {
     Product.getAll((err, products) => {

@@ -1,8 +1,11 @@
 <%- include('partials/header') %>
 
+<!-- DataTables CSS -->
+
 <div class="container my-5">
     <h2 class="text-center mb-4">Order History</h2>
-    <table class="table table-bordered">
+    
+    <table class="table table-bordered" id="orderHistoryTable">
         <thead class="bg-secondary text-white">
             <tr>
                 <th>Order ID</th>
@@ -41,3 +44,13 @@
 </div>
 
 <%- include('partials/footer') %>
+
+<!-- DataTables JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#orderHistoryTable').DataTable({
+            dom: '<"top"lf>rt<"bottom"ip><"clear">'
+        });
+    });
+</script>

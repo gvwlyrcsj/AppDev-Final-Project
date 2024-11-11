@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../models/db');
 const Cart = require('../models/Cart');
+const productController = require('../controllers/productController'); // Ensure the correct path to the controller
+
+router.get('/search', productController.search);
 
 // Function to fetch products from the database
 function getProductsFromDatabase(callback) {

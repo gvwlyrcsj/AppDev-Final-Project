@@ -1,5 +1,18 @@
 const db = require('./db'); 
 
+const Product = {
+    searchByNameOrDescription: async (searchTerm) => {
+        const query = `
+            SELECT * FROM addproducts 
+            WHERE name LIKE ? OR description LIKE ?
+        `;
+        const [results] = await db.promise().query(query, [`%${searchTerm}%`, `%${searchTerm}%`]);
+        return results;
+    }
+};
+
+module.exports = Product;
+
 // Fetch all products
 exports.getAll = (callback) => {
     const sql = 'SELECT * FROM addproducts'; 

@@ -1,9 +1,9 @@
-// routes/userProfileRoutes.js
 const express = require('express');
 const router = express.Router();
 const userProfileController = require('../controllers/userProfileController');
+const { editAddressPage } = require('../controllers/userProfileController'); 
 
-// Middleware to check if user is authenticated
+router.get('/edit-address', editAddressPage);
 const isAuthenticated = (req, res, next) => {
     if (req.session.userId) {
         return next();
@@ -15,22 +15,11 @@ router.get('/:token', isAuthenticated, userProfileController.getUserProfileById)
 
 router.post('/upsert', isAuthenticated, userProfileController.upsertProfile);
 
-router.get('/checkoutsuccess', (req, res) => {
+router.get('/checkoutSuccess', (req, res) => {
     res.render('checkoutSuccess'); 
 });
 
-router.post('/checkout/update-address', (req, res) => {
-    const { street_name, barangay, city, zip_code } = req.body;
-
-    updateAddress(req.user.id, street_name, barangay, city, zip_code)
-        .then(() => {
-            res.redirect('/checkoutSuccess');
-        })
-        .catch(err => {
-            console.error(err);
-            // Optionally, redirect to an error page or display an error message
-            res.redirect('/checkout');
-        });
-});
+router.get('/edit-address', userProfileController.editAddressPage);
+router.post('/edit-address', isAuthenticated, userProfileController.updateAddress);
 
 module.exports = router;

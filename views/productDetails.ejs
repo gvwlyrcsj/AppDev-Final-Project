@@ -10,9 +10,8 @@
             <form id="addToCartForm">
                 <input type="hidden" name="productId" value="<%= product.id %>">
                 <input type="hidden" name="userId" value="<%= userId %>">
-                <input type="hidden" name="size" id="selectedSize" value="small"> <!-- Default size -->
+                <input type="hidden" name="size" id="selectedSize" value=""> <!-- No default size -->
 
-                <!-- Size Selection as Buttons -->
                 <div class="form-group">
                     <label>Size:</label>
                     <div class="btn-group" role="group" aria-label="Size Selection">
@@ -23,7 +22,6 @@
                     </div>
                 </div>
 
-                <!-- Quantity Selection -->
                 <div class="form-group d-flex align-items-center">
                     <label for="quantity" class="mr-3">Quantity:</label>
                     <button type="button" class="btn btn-outline-secondary btn-lg" id="decrement">-</button>
@@ -31,21 +29,18 @@
                     <button type="button" class="btn btn-outline-secondary btn-lg" id="increment">+</button>
                 </div>
 
-                <!-- Centered Buttons -->
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-secondary btn-lg mx-2">Add to Cart</button>
                     <button type="button" class="btn btn-primary btn-lg mx-2" id="buyNow">Buy Now</button>
                 </div>
             </form>
             
-            <!-- Notification Area -->
             <div id="notification" class="mt-3" style="display:none; color: green; font-weight: bold;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // JavaScript for incrementing, decrementing, and handling "Add to Cart" alerts
     const decrementButton = document.getElementById('decrement');
     const incrementButton = document.getElementById('increment');
     const quantityInput = document.getElementById('quantity');
@@ -53,20 +48,18 @@
     const sizeButtons = document.querySelectorAll('[data-size]');
     const selectedSizeInput = document.getElementById('selectedSize');
 
-    // Set default size and price
     let selectedPrice = 59;
 
-    // Handle size button click
     sizeButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Remove active class from all buttons
+
             sizeButtons.forEach(btn => btn.classList.remove('active'));
-            // Add active class to clicked button
+
             button.classList.add('active');
-            // Update selected size
+
             const selectedSize = button.getAttribute('data-size');
             selectedSizeInput.value = selectedSize;
-            // Update price based on selected button
+
             selectedPrice = button.getAttribute('data-price');
             priceDisplay.textContent = `₱${selectedPrice}`;
         });
@@ -84,47 +77,53 @@
         quantityInput.value = currentValue + 1;
     });
 
-    // Handle add to cart form submission with validation and redirect to checkout
     document.getElementById('addToCartForm').addEventListener('submit', function (event) {
-    event.preventDefault();
+        event.preventDefault();
 
-    const formData = new FormData(this);
-    const selectedSize = formData.get('size');
-    const quantity = formData.get('quantity');
+        const formData = new FormData(this);
+        const selectedSize = formData.get('size');
+        const quantity = formData.get('quantity');
 
-    // Check if required fields are filled
-    if (!selectedSize || quantity <= 0) {
-        alert("Please select products."); 
-        return;
-    }
-
-    fetch('/cart/add', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Product added successfully!");
-            window.location.href = '/product';
-        } else {
-            alert(data.message); // Display specific error message from backend
+        if (!selectedSize || quantity <= 0) {
+            alert("Please select a size and quantity."); 
+            return;
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while adding the product to the cart.');
+
+        fetch('/cart/add', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Product added successfully!");
+                window.location.href = '/product';
+            } else {
+                alert(data.message); 
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while adding the product to the cart.');
+        });
     });
-});
 
-    // Buy Now functionality that redirects to checkout
     document.getElementById('buyNow').addEventListener('click', () => {
-    const quantity = quantityInput.value;
-    const size = selectedSizeInput.value;
-    const productId = document.querySelector('input[name="productId"]').value;
-    const price = selectedPrice;
+        const quantity = quantityInput.value;
+        const size = selectedSizeInput.value;
+        const productId = document.querySelector('input[name="productId"]').value;
+        const price = selectedPrice;
 
-    // Redirect to checkout with query parameters for the selected product
-    window.location.href = `/checkout?productId=${productId}&size=${size}&quantity=${quantity}&price=${price}`;
-});
+        if (!size || quantity <= 0) {
+            alert("Please select a size and quantity."); 
+            return;
+        }
+
+        window.location.href = `/checkout?productId=${productId}&size=${size}&quantity=${quantity}&price=${price}`;
+    });
+    function cancelOrder() { 
+        if (confirm("Are you sure you want to cancel this order?")) { 
+            window.location.href = '/checkout/cancel'; 
+            } 
+        }
 </script>

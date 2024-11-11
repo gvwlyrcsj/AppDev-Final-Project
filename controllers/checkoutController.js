@@ -1,5 +1,4 @@
 const db = require('../models/db');
-const CheckOut = require('../models/Checkout');
 
 // View Checkout Page
 const viewCheckout = async (req, res) => {
@@ -138,7 +137,7 @@ const cancelOrder = async (req, res) => {
         const userId = req.session.userId;
         await clearCart(userId);
 
-        res.redirect('/checkout/checkoutSuccess'); 
+        res.redirect('/product'); 
     } catch (error) {
         console.error("Error cancelling order:", error);
         res.status(500).send("Internal Server Error");

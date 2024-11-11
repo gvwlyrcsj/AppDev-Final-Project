@@ -2,16 +2,28 @@ const express = require('express');
 const router = express.Router();
 const cartController = require('../controllers/cartController');
 const Cart = require('../models/Cart'); 
+const authMiddleware = require('../middleware/authMiddleware');
 
 // Route to get the user's cart
 router.get('/', cartController.getCart);
 router.post('/checkout', cartController.checkout);
 
 // POST route to add item to cart
-router.post('/add', (req, res) => {
-    const { userId, productId, size, quantity } = req.body;
-    const parsedQuantity = parseInt(quantity, 10);
+router.post('/add', authMiddleware, (req, res) => {
+    const { productId, size, quantity } = req.body;
+    const userId = req.session.userId;
 
+    // Log userId to check if it's retrieved correctly
+    console.log("User ID from session:", userId);
+
+    if (!userId) {
+        return res.status(401).json({ success: false, message: 'User not logged in.' });
+    }
+    if (!productId || !size || quantity <= 0) {
+        return res.status(400).json({ success: false, message: 'Invalid input data.' });
+    }
+
+    const parsedQuantity = parseInt(quantity, 10);
     const priceMap = { small: 59, medium: 69, large: 79, xl: 89 };
     const price = priceMap[size];
 
@@ -20,19 +32,15 @@ router.post('/add', (req, res) => {
         return res.status(400).json({ success: false, message: 'Invalid size selected.' });
     }
 
-    try {
-        Cart.addToCart(userId, productId, size, parsedQuantity, price)
-            .then(() => {
-                return res.json({ success: true, message: "Product added to cart successfully!" });
-            })
-            .catch(error => {
-                console.error("Error adding to cart:", error);
-                return res.status(500).json({ success: false, message: 'Error adding to cart.' });
-            });
-    } catch (error) {
-        console.error("Unexpected error:", error);
-        return res.status(500).json({ success: false, message: 'Unexpected error occurred.' });
-    }
+    // Proceed to add the item to the cart
+    Cart.addToCart(userId, productId, size, parsedQuantity, price)
+        .then(() => {
+            return res.json({ success: true, message: "Product added to cart successfully!" });
+        })
+        .catch(error => {
+            console.error("Error adding to cart:", error);
+            return res.status(500).json({ success: false, message: 'Error adding to cart.' });
+        });
 });
 
 router.delete('/delete/:id', async (req, res) => {
@@ -55,10 +63,8 @@ router.post('/checkoutSuccess', async (req, res) => {
     }
 
     try {
-        // After the checkout is successful, clear items from the cart
         await Cart.removeItems(cartItems.map(item => item.id));
 
-        // Render the checkout success page with cart items and the total price
         res.render('checkoutSuccess', { cartItems, total: cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) });
     } catch (error) {
         console.error('Error during checkout:', error);
