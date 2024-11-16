@@ -1,28 +1,42 @@
 <%- include('partials/adminHeader') %>   
 
-        <div class="container mt-5">
-            <h2>Add Product</h2>
-            <form action="/addProduct" method="POST" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" name="description" required></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" class="form-control" id="price" name="price" required>
-                </div>
-                <!-- File Upload for Image -->
-                <div class="mb-3">
-                    <label for="image" class="form-label">Upload Image</label>
-                    <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Add Product</button>
-                <a href="/manageProducts" class="btn btn-secondary">Cancel</a>
-            </form>
-        </div>   
-             
+    <div class="container mt-5">
+        <h2>Add Product</h2>
+        <form action="/addProduct" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Price per unit</label>
+                <input type="number" class="form-control" id="price" name="price" required>
+            </div>
+            
+            <!-- Quantity in Stock Field -->
+            <div class="mb-3">
+                <label for="quantity_in_stock" class="form-label">Quantity in Stock</label>
+                <input type="number" class="form-control" id="quantity_in_stock" name="quantity_in_stock" required>
+            </div>
+
+            <!-- Unit Field -->
+            <div class="mb-3">
+                <label for="unit" class="form-label">Unit</label>
+                <input type="text" class="form-control" id="unit" name="unit" required>
+            </div>
+
+            <!-- File Upload for Image -->
+            <div class="mb-3">
+                <label for="image" class="form-label">Upload Image</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Add Product</button>
+            <a href="/manageProducts" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>   
+
 <%- include('partials/adminFooter') %>   

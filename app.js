@@ -7,14 +7,6 @@ const db = require('./models/db');
 const app = express();
 require('dotenv').config();
 
-
-const authMiddleware = require('./middleware/authMiddleware');
-const authRoutes = require('./routes/auth');
-const adminRoutes = require('./routes/adminRoutes');
-const productRoutes = require('./routes/productRoutes');
-const cartRoutes = require('./routes/cartRoutes');
-const userProfileRoutes = require('./routes/userProfileRoutes');
-
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -49,17 +41,37 @@ app.use((req, res, next) => {
     next();
 });
 
-// Set view engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static('public'));
-
 // Middleware to set local variables based on session
 app.use((req, res, next) => {
     res.locals.username = req.session.username || null;
     res.locals.loggedIn = !!req.session.userId; // Set loggedIn based on session
     next();
 });
+
+app.get('/', (req, res) => {
+    res.redirect('/about');
+});
+
+const authMiddleware = require('./middleware/authMiddleware');
+const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/adminRoutes');
+const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const userProfileRoutes = require('./routes/userProfileRoutes');
+
+const kioskRoutes = require('./routes/kiosk');
+app.use('/kiosk', kioskRoutes);
+app.get('/startKiosk', (req, res) => {
+    res.sendFile(path.join(__dirname, './views/start-order.html'));
+});
+app.use('/kiosk', kioskRoutes);  
+
+
+// Set view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static('public'));
+
 
 app.use(authMiddleware);
 
@@ -98,12 +110,8 @@ app.get('/product', (req, res) => {
     }
 });
 
-app.get('/', (req, res) => {
-    res.redirect('/about');
-});
 
 const orderRoutes = require('./routes/orderRoutes');
-
 app.use('/', orderRoutes);
 
 // Start the server

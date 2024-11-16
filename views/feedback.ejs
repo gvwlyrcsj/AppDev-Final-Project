@@ -1,40 +1,51 @@
 <%- include('partials/adminHeader') %>   
-    <div class="container-fluid py-5">
-        <div class="container py-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-6">
-                    <h1 class="section-title position-relative text-center mb-5">All Contact Queries</h1>
-                </div>
-            </div>
 
-            <div class="row justify-content-center">
-                <div class="col-lg-9">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Subject</th>
-                                <th>Message</th>
-                                <th>Created At</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% contacts.forEach(contact => { %>
-                                <tr>
-                                    <td><%= contact.name %></td>
-                                    <td><%= contact.email %></td>
-                                    <td><%= contact.subject %></td>
-                                    <td><%= contact.message %></td>
-                                    <td><%= new Date(contact.created_at).toLocaleString() %></td>
-                                </tr>
-                            <% }) %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Contact List End -->
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 
-    <%- include('partials/adminFooter') %>   
+<div class="container mt-5">
+    <h2 class="text-center mb-4">All Contact Queries</h2>
+
+    <!-- Contact Queries Table -->
+    <table id="contactQueriesTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Message</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% contacts.forEach(contact => { %>
+                <tr>
+                    <td><%= contact.name %></td>
+                    <td><%= contact.email %></td>
+                    <td><%= contact.subject %></td>
+                    <td><%= contact.message %></td>
+                    <td><%= new Date(contact.created_at).toLocaleString() %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('partials/adminFooter') %>
+
+<!-- jQuery and DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable with pagination, sorting, and responsive options
+        $('#contactQueriesTable').DataTable({
+            "paging": true,       // Enable pagination
+            "searching": true,    // Enable search functionality
+            "ordering": true,     // Enable sorting on columns
+            "pageLength": 10,     // Default rows per page
+            "order": [[4, "desc"]], // Order by 'Created At' in descending order
+            "responsive": true     // Optional: makes table responsive
+        });
+    });
+</script>
