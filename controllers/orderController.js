@@ -51,7 +51,7 @@ exports.getAllOrders = async (req, res) => {
             order.formattedOrderDate = `${day}/${month}/${year} ${formattedHours}:${minutes} ${ampm}`;
 
             if (!order.status) {
-                order.status = 'pending';  // Default to 'pending' if status is not defined
+                order.status = 'pending';  
             }
         });
 

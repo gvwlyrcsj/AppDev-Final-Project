@@ -38,7 +38,6 @@ exports.getUserProfile = (req, res) => {
 };
 
 exports.updateUserProfile = (req, res) => {
-    // Logic for updating the user profile
     res.redirect('/userProfile');
 };
 

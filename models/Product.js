@@ -79,10 +79,10 @@ const Product = {
 
     decrementInventory: async (productId, size, quantity) => {
         const sizeMapping = {
-            small: { powder: 10, cup: 1, milk: 100 },
-            medium: { powder: 15, cup: 1, milk: 150 },
-            large: { powder: 20, cup: 1, milk: 200 },
-            xl: { powder: 25, cup: 1, milk: 250 }
+            small: { powder: 10, cupId: 12, cupAmount: 1, milk: 100 },
+            medium: { powder: 15, cupId: 14, cupAmount: 1, milk: 150 },
+            large: { powder: 20, cupId: 15, cupAmount: 1, milk: 200 },
+            xl: { powder: 25, cupId: 16, cupAmount: 1, milk: 250 }
         };
 
         const decrement = sizeMapping[size];
@@ -90,7 +90,7 @@ const Product = {
 
         const productsToDecrement = [
             { id: productId, amount: decrement.powder * quantity }, // Powder (e.g., Milk tea powder)
-            { id: '12', amount: decrement.cup * quantity }, // Assuming '12' is the ID for cups
+            { id: decrement.cupId, amount: decrement.cupAmount * quantity }, // Cup size specific ID
             { id: '11', amount: decrement.milk * quantity }, // Assuming '11' is the ID for milk
             { id: '13', amount: quantity } // Assuming '13' is the ID for straws
         ];

@@ -1,6 +1,6 @@
 const db = require('../models/db');
+const Product = require('../models/Product');
 
-// View Checkout Page
 const viewCheckout = async (req, res) => {
     const userId = req.session.userId;
     if (!userId) return res.redirect('/sign-in');
@@ -10,12 +10,16 @@ const viewCheckout = async (req, res) => {
             'SELECT * FROM user_profile WHERE user_id = ?', [userId]
         );
 
-        const shippingAddress = userProfile.length > 0 ? {
+        if (userProfile.length === 0) {
+            return res.status(404).send('User profile not found');
+        }
+
+        const shippingAddress = {
             street_name: userProfile[0].street_name,
             barangay: userProfile[0].barangay,
             city: userProfile[0].city,
             zip_code: userProfile[0].zip_code
-        } : {};
+        };
 
         const { productId, size, quantity, price } = req.query;
 
@@ -28,6 +32,7 @@ const viewCheckout = async (req, res) => {
             const total = parseFloat(price) * parseInt(quantity);
 
             return res.render('checkout', {
+                userProfile: userProfile[0],
                 cartItems: [{
                     product_id: product[0].id,
                     name: product[0].name,
@@ -37,7 +42,7 @@ const viewCheckout = async (req, res) => {
                     price: parseFloat(price)
                 }],
                 total,
-                shippingAddress,  
+                shippingAddress,
                 product_id: product[0].id,
                 size,
                 quantity: parseInt(quantity),
@@ -51,7 +56,12 @@ const viewCheckout = async (req, res) => {
 
         const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-        res.render('checkout', { cartItems, total, shippingAddress });
+        res.render('checkout', {
+            userProfile: userProfile[0],
+            cartItems,
+            total,
+            shippingAddress
+        });
 
     } catch (error) {
         console.error("Error loading checkout:", error);
@@ -202,4 +212,3 @@ module.exports = {
     cancelOrder,
     placeOrder
 };
-

@@ -60,12 +60,10 @@ const cartRoutes = require('./routes/cartRoutes');
 const userProfileRoutes = require('./routes/userProfileRoutes');
 
 const kioskRoutes = require('./routes/kiosk');
-app.use('/kiosk', kioskRoutes);
+app.use('/', kioskRoutes);
 app.get('/startKiosk', (req, res) => {
     res.sendFile(path.join(__dirname, './views/start-order.html'));
 });
-app.use('/kiosk', kioskRoutes);  
-
 
 // Set view engine
 app.set('view engine', 'ejs');
@@ -81,6 +79,7 @@ app.use('/userProfile', userProfileRoutes);
 app.use('/', adminRoutes);
 app.use('/product', productRoutes);
 app.use('/manageProduct', require('./routes/manageProductRoutes'));
+app.use('/user', userProfileRoutes);
 
 // product
 app.get('/addProduct', require('./controllers/manageProductController').getAddProduct);
@@ -99,6 +98,7 @@ app.use('/feedback', require('./routes/feedbackRoutes'));
 
 const checkoutRoutes = require('./routes/checkoutRoutes');
 app.use('/checkout', checkoutRoutes);
+app.use('/', checkoutRoutes);
 app.use('/profile', userProfileRoutes);
 
 // Restrict access to product route

@@ -1,7 +1,9 @@
 const express = require('express'); // Import express 
 const router = express.Router();
 const kioskController = require('../controllers/kioskController'); // Define routes router.get('/products', kioskController.getProductList);
-// Fetch all products
+
+router.get('/kiosk', kioskController.getProductList);
+
 exports.getAll = (callback) => {
     const sql = 'SELECT * FROM addproducts'; 
     db.query(sql, (error, results) => {
