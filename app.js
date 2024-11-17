@@ -7,13 +7,10 @@ const db = require('./models/db');
 const app = express();
 require('dotenv').config();
 
-
-const authMiddleware = require('./middleware/authMiddleware');
-const authRoutes = require('./routes/auth');
-const adminRoutes = require('./routes/adminRoutes');
-const productRoutes = require('./routes/productRoutes');
-const cartRoutes = require('./routes/cartRoutes');
-const userProfileRoutes = require('./routes/userProfileRoutes');
+// Set view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static('public'));
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -49,11 +46,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Set view engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static('public'));
-
 // Middleware to set local variables based on session
 app.use((req, res, next) => {
     res.locals.username = req.session.username || null;
@@ -61,12 +53,29 @@ app.use((req, res, next) => {
     next();
 });
 
+const authMiddleware = require('./middleware/authMiddleware');
 app.use(authMiddleware);
 
-app.use('/cart', cartRoutes);
+const authRoutes = require('./routes/auth');
 app.use('/', authRoutes);
-app.use('/userProfile', userProfileRoutes);
+
+const adminRoutes = require('./routes/adminRoutes');
 app.use('/', adminRoutes);
+
+const productRoutes = require('./routes/productRoutes');
+
+const cartRoutes = require('./routes/cartRoutes');
+app.use('/cart', cartRoutes);
+
+const userProfileRoutes = require('./routes/userProfileRoutes');
+app.use('/userProfile', userProfileRoutes);
+
+const kioskRoutes = require('./routes/kiosk');
+app.use('/kiosk', kioskRoutes);
+app.get('/startKiosk', (req, res) => {
+    res.sendFile(path.join(__dirname, './views/start-order.html'));
+});
+
 app.use('/product', productRoutes);
 app.use('/manageProduct', require('./routes/manageProductRoutes'));
 
@@ -89,21 +98,7 @@ const checkoutRoutes = require('./routes/checkoutRoutes');
 app.use('/checkout', checkoutRoutes);
 app.use('/profile', userProfileRoutes);
 
-// Restrict access to product route
-app.get('/product', (req, res) => {
-    if (req.session.userId) {
-        res.render('product'); 
-    } else {
-        res.redirect('/sign-in'); 
-    }
-});
-
-app.get('/', (req, res) => {
-    res.redirect('/about');
-});
-
 const orderRoutes = require('./routes/orderRoutes');
-
 app.use('/', orderRoutes);
 
 // Start the server

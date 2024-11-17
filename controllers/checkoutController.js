@@ -1,6 +1,6 @@
 const db = require('../models/db');
+const Product = require('../models/Product');
 
-// View Checkout Page
 const viewCheckout = async (req, res) => {
     const userId = req.session.userId;
     if (!userId) return res.redirect('/sign-in');
@@ -10,12 +10,16 @@ const viewCheckout = async (req, res) => {
             'SELECT * FROM user_profile WHERE user_id = ?', [userId]
         );
 
-        const shippingAddress = userProfile.length > 0 ? {
+        if (userProfile.length === 0) {
+            return res.status(404).send('User profile not found');
+        }
+
+        const shippingAddress = {
             street_name: userProfile[0].street_name,
             barangay: userProfile[0].barangay,
             city: userProfile[0].city,
             zip_code: userProfile[0].zip_code
-        } : {};
+        };
 
         const { productId, size, quantity, price } = req.query;
 
@@ -28,6 +32,7 @@ const viewCheckout = async (req, res) => {
             const total = parseFloat(price) * parseInt(quantity);
 
             return res.render('checkout', {
+                userProfile: userProfile[0],
                 cartItems: [{
                     product_id: product[0].id,
                     name: product[0].name,
@@ -37,7 +42,7 @@ const viewCheckout = async (req, res) => {
                     price: parseFloat(price)
                 }],
                 total,
-                shippingAddress,  
+                shippingAddress,
                 product_id: product[0].id,
                 size,
                 quantity: parseInt(quantity),
@@ -51,7 +56,12 @@ const viewCheckout = async (req, res) => {
 
         const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-        res.render('checkout', { cartItems, total, shippingAddress });
+        res.render('checkout', {
+            userProfile: userProfile[0],
+            cartItems,
+            total,
+            shippingAddress
+        });
 
     } catch (error) {
         console.error("Error loading checkout:", error);
@@ -68,9 +78,8 @@ const confirmCheckout = async (req, res) => {
 
     try {
         let total, orderId;
-        let cartItems = [];
 
-        // Ensure the form data is in array format (this is for when processing multiple items)
+        // Ensure data is in array format for batch processing
         if (!Array.isArray(productId) || !Array.isArray(size) || !Array.isArray(quantity) || !Array.isArray(price)) {
             return res.status(400).send("Invalid checkout data.");
         }
@@ -80,19 +89,22 @@ const confirmCheckout = async (req, res) => {
             return sum + (parseFloat(itemPrice) * parseInt(quantity[index]));
         }, 0);
 
-        // Create the order and get the order ID
+        // Create the order
         orderId = await createOrder(userId, total);
 
         // Prepare order items for insertion
         const orderItems = productId.map((id, index) => [
             orderId,
-            parseInt(id), 
+            parseInt(id),
             size[index],
             parseInt(quantity[index]),
             parseFloat(price[index])
         ]);
 
-        console.log("Prepared order items for batch insert:", orderItems);
+        // Decrement inventory for each product in the order
+        for (let i = 0; i < productId.length; i++) {
+            await Product.decrementInventory(productId[i], size[i], quantity[i]);
+        }
 
         // Add items to order_items table
         await addOrderItems(orderId, orderItems);
@@ -103,7 +115,6 @@ const confirmCheckout = async (req, res) => {
         // Redirect to success page
         res.redirect(`/checkout/checkoutSuccess?orderId=${orderId}`);
     } catch (error) {
-        // Log the error in case of failure
         console.error("Error during checkout:", error);
         res.status(500).send("Internal Server Error");
     }
@@ -179,6 +190,18 @@ const clearCart = async (userId) => {
     }
 };
 
+const placeOrder = async (req, res) => {
+    const { productId, size, quantity } = req.body;
+
+    try {
+        await Product.decrementInventory(productId, size, quantity);
+        res.json({ message: 'Order placed successfully, inventory updated' });
+    } catch (error) {
+        console.error('Error placing order:', error);
+        res.status(500).json({ error: 'Error placing order or updating inventory' });
+    }
+};
+
 module.exports = {
     viewCheckout,
     confirmCheckout,
@@ -186,5 +209,6 @@ module.exports = {
     addOrderItems,
     clearCart,
     createOrder,
-    cancelOrder
+    cancelOrder,
+    placeOrder
 };

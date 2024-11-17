@@ -33,8 +33,8 @@
                     <td><%= order.product_name %></td>
                     <td><%= order.size %></td>
                     <td><%= order.quantity %></td>
-                    <td>$<%= order.price %></td>
-                    <td>$<%= (order.price * order.quantity).toFixed(2) %></td>
+                    <td>₱<%= order.price %></td>
+                    <td>₱<%= (order.price * order.quantity).toFixed(2) %></td>
                     <td><%= new Date(order.order_date).toLocaleDateString() %></td>
                     <td><%= order.status %></td>
                 </tr>

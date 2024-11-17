@@ -6,19 +6,34 @@
                 <label for="name" class="form-label">Name</label>
                 <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
             </div>
+            
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
                 <textarea class="form-control" id="description" name="description" required><%= product.description %></textarea>
             </div>
+            
             <div class="mb-3">
-                <label for="price" class="form-label">Price</label>
+                <label for="price" class="form-label">Price per unit</label>
                 <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" required>
+            </div>
+
+            <!-- Quantity in Stock Field -->
+            <div class="mb-3">
+                <label for="quantity_in_stock" class="form-label">Quantity in Stock</label>
+                <input type="number" class="form-control" id="quantity_in_stock" name="quantity_in_stock" value="<%= product.quantity_in_stock %>" required>
+            </div>
+
+            <!-- Unit Field -->
+            <div class="mb-3">
+                <label for="unit" class="form-label">Unit</label>
+                <input type="text" class="form-control" id="unit" name="unit" value="<%= product.unit %>" required>
             </div>
 
             <div class="mb-3">
                 <label for="image" class="form-label">Upload New Image</label>
                 <input type="file" class="form-control" id="image" name="image" accept="image/*">
             </div>
+            
             <button type="submit" class="btn btn-primary">Update Product</button>
             <a href="/manageProduct" class="btn btn-secondary">Cancel</a>
         </form>

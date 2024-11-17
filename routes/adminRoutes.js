@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const adminController = require('../controllers/adminController');
 
-// Middleware to check if the user is an admin
 const ensureAdmin = (req, res, next) => {
     if (req.session.userId && req.session.role === 'admin') {
         next(); // User is admin, allow access
@@ -10,9 +10,6 @@ const ensureAdmin = (req, res, next) => {
     }
 };
 
-// Route to render admin page
-router.get('/admin', ensureAdmin, (req, res) => {
-    res.render('admin'); // Render the admin page
-});
+router.get('/admin', ensureAdmin, adminController.getDashboardData);
 
 module.exports = router;

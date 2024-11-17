@@ -18,7 +18,7 @@ router.post('/upsert', isAuthenticated, userProfileController.upsertProfile);
 router.get('/checkoutSuccess', (req, res) => {
     res.render('checkoutSuccess'); 
 });
-
+router.post('/update-profile', userProfileController.updateUserProfile);
 router.get('/edit-address', userProfileController.editAddressPage);
 router.post('/edit-address', isAuthenticated, userProfileController.updateAddress);
 

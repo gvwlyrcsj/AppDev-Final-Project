@@ -1,149 +1,104 @@
 <%- include('partials/adminHeader') %>
 
-<style>
-    /* Basic reset */
-    body, h1, h2, h3, p {
-        margin: 0;
-        padding: 0;
-        font-family: 'Arial', sans-serif;
-    }
+<div class="container my-5">
+    <h1 class="text-center mb-4">Admin Dashboard</h1>
 
-    /* General container */
-    .container {
-        width: 80%;
-        margin: 0 auto;
-        padding-top: 20px;
-    }
-
-    /* Dashboard header */
-    h1 {
-        text-align: center;
-        font-size: 2.5rem;
-        color: #333;
-        margin-bottom: 20px;
-    }
-
-    /* Flex container for the four sections */
-    .dashboard-row {
-        display: flex;
-        justify-content: space-between;
-        gap: 30px; /* Adds space between each item */
-        margin-bottom: 40px;
-    }
-
-    /* Individual section style */
-    .section {
-        background-color: #ffffff;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        width: 23%; /* Adjust width to fit four items in a row */
-        text-align: center;
-    }
-
-    /* Earnings Section */
-    .earnings {
-        background-color: #f4f7fa;
-        color: #4CAF50;
-    }
-
-    .earnings h2 {
-        font-size: 1.8rem;
-        margin-bottom: 15px;
-    }
-
-    .total-earnings h3 {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #333;
-    }
-
-    /* Best Seller Section */
-    .best-seller h2 {
-        font-size: 1.8rem;
-        color: #FF5733;
-        margin-bottom: 20px;
-    }
-
-    .chart-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-
-    .chart img {
-        width: 100px; /* Image width */
-        height: auto;
-        border-radius: 8px;
-    }
-
-    .best-seller p {
-        font-size: 1.1rem;
-        color: #555;
-    }
-
-    /* Sales Section */
-    .sales h2 {
-        font-size: 1.8rem;
-        margin-bottom: 15px;
-    }
-
-    .sales h3 {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .sales p {
-        font-size: 1rem;
-        color: #777;
-    }
-</style>
-
-<div class="container">
-    <h1>Admin Dashboard</h1>
-
-    <!-- Dashboard Row -->
-    <div class="dashboard-row">
-        <!-- Total Earnings Section -->
-        <div class="section earnings">
-            <h2>Monthly Sales</h2>
-            <div class="total-earnings">
-                <h3>$1212</h3>
-            </div>
-        </div>
-
-        <!-- Daily Sales Section -->
-        <div class="section sales">
-            <h2>Daily Sales</h2>
-            <div class="sales">
-                <h3>$177</h3>
-                <p>Today's sales so far</p>
+    <div class="row text-center">
+         <!-- Daily Sales Section -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm" style="min-height: 250px;">
+                <div class="card-body">
+                    <h5 class="card-title">Daily Sales</h5>
+                    <h3 class="card-text">	₱<%= dailySales %></h3>
+                </div>
             </div>
         </div>
 
         <!-- Weekly Sales Section -->
-        <div class="section sales">
-            <h2>Weekly Sales</h2>
-            <div class="sales">
-                <h3>$1035</h3>
-                <p>This week's sales</p>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm" style="min-height: 250px;">
+                <div class="card-body">
+                    <h5 class="card-title">Weekly Sales</h5>
+                    <h3 class="card-text">	₱<%= weeklySales %></h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Sales Section -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm" style="min-height: 250px;">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly Sales</h5>
+                    <h3 class="card-text">	₱<%= monthlySales %></h3>
+                </div>
             </div>
         </div>
 
         <!-- Best Seller Section -->
-        <div class="section best-seller">
-            <h2>Best Seller: Wintermelon</h2>
-            <div class="chart-container">
-                <div class="chart">
-                    <!-- Updated image for Wintermelon -->
-                    <img src="/uploads/pngtree-pearl-milk-tea-pearl-drink-transparent-png-image_9059833.png" alt="Best Seller Wintermelon">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm" style="min-height: 250px;">
+                <div class="card-body">
+                    <h5 class="card-title">Best Seller</h5>
+                    <h3 class="card-text"><%= bestSeller %></h3>
+                    <div class="mt-3">
+                        <img src="<%= bestSellerImage %>" alt="Best Seller <%= bestSeller %>" class="img-fluid rounded" style="width: 100px; height: auto;">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Past 7 Days' Income Chart Section -->
+    <div class="my-5">
+        <h2 class="text-center">Income for the Past 7 Days</h2>
+        <canvas id="incomeChart" width="400" height="200"></canvas>
+    </div>
 </div>
 
-<%- include('partials/adminFooter') %>
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Correctly stringify the dates and sales data
+    const salesDates = <%- JSON.stringify(salesDates) %>;
+    const salesData = <%- JSON.stringify(salesData) %>;
+
+    const ctx = document.getElementById('incomeChart').getContext('2d');
+    const config = {
+        type: 'bar',
+        data: {
+            labels: salesDates, // Dates for the past 7 days
+            datasets: [{
+                label: 'Daily Income',
+                data: salesData, // Sales amounts for the past 7 days
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(255, 205, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(255, 159, 64)',
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)',
+                    'rgb(54, 162, 235)',
+                    'rgb(153, 102, 255)',
+                    'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    new Chart(ctx, config);
+</script>
