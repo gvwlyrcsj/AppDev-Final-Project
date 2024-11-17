@@ -15,7 +15,7 @@ exports.getOrderHistory = async (req, res) => {
              JOIN order_items ON orders.id = order_items.order_id 
              JOIN addproducts ON order_items.product_id = addproducts.id 
              WHERE orders.user_id = ? 
-             ORDER BY orders.order_date DESC`, 
+             ORDER BY orders.order_date ASC`, 
             [userId]
         );
 
@@ -35,7 +35,7 @@ exports.getAllOrders = async (req, res) => {
              FROM orders 
              JOIN order_items ON orders.id = order_items.order_id 
              JOIN addproducts ON order_items.product_id = addproducts.id 
-             ORDER BY orders.order_date DESC`
+             ORDER BY orders.order_date ASC`
         );
 
         // Format the order date on the server side and ensure status defaults to 'pending'
@@ -51,7 +51,7 @@ exports.getAllOrders = async (req, res) => {
             order.formattedOrderDate = `${day}/${month}/${year} ${formattedHours}:${minutes} ${ampm}`;
 
             if (!order.status) {
-                order.status = 'pending';  // Default to 'pending' if status is not defined
+                order.status = 'pending';  
             }
         });
 

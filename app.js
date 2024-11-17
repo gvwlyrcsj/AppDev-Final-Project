@@ -78,6 +78,7 @@ app.get('/startKiosk', (req, res) => {
 
 app.use('/product', productRoutes);
 app.use('/manageProduct', require('./routes/manageProductRoutes'));
+app.use('/user', userProfileRoutes);
 
 // product
 app.get('/addProduct', require('./controllers/manageProductController').getAddProduct);
@@ -96,6 +97,7 @@ app.use('/feedback', require('./routes/feedbackRoutes'));
 
 const checkoutRoutes = require('./routes/checkoutRoutes');
 app.use('/checkout', checkoutRoutes);
+app.use('/', checkoutRoutes);
 app.use('/profile', userProfileRoutes);
 
 const orderRoutes = require('./routes/orderRoutes');

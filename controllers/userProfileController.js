@@ -160,20 +160,53 @@ exports.editAddressPage = async (req, res) => {
     }
 };
 
-
 exports.updateAddress = async (req, res) => {
     const userId = req.session.userId;
-    if (!userId) return res.redirect('/sign-in');
-
     const { street_name, barangay, city, zip_code } = req.body;
 
-    try {
-        await UserProfile.updateAddress(userId, { street_name, barangay, city, zip_code });
+    if (!userId) {
+        return res.status(401).json({ message: 'User not authenticated' });
+    }
 
-        res.redirect('/checkout');
+    try {
+        const [result] = await pool.promise().query(
+            `UPDATE user_profile SET street_name = ?, barangay = ?, city = ?, zip_code = ? WHERE user_id = ?`,
+            [street_name, barangay, city, zip_code, userId]
+        );
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ message: 'Address updated successfully' });
+        } else {
+            res.status(400).json({ message: 'Address update failed' });
+        }
     } catch (error) {
         console.error("Error updating address:", error);
-        res.status(500).send("Error updating address");
+        res.status(500).json({ message: 'Error updating address' });
+    }
+};
+
+exports.updateUserProfile = async (req, res) => {
+    const userId = req.session.userId;
+    const { name, phone, street_name, barangay, city, zip_code } = req.body;
+
+    if (!userId) {
+        return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    try {
+        const [result] = await pool.promise().query(
+            `UPDATE user_profile SET name = ?, phone = ?, street_name = ?, barangay = ?, city = ?, zip_code = ? WHERE user_id = ?`,
+            [name, phone, street_name, barangay, city, zip_code, userId]
+        );
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ message: 'Profile updated successfully' });
+        } else {
+            res.status(400).json({ message: 'Profile update failed' });
+        }
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).json({ message: 'Error updating profile' });
     }
 };
 
