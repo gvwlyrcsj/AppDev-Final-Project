@@ -1,81 +1,96 @@
-const User = require('../models/User');
+const User = require('../models/User'); 
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-// Handle user signup
-exports.signup = (req, res) => {
-    const { username, email, password, role } = req.body;
-
-    User.findByEmail(email, (error, existingUser) => {
-        if (error) {
-            console.error('Error finding user by email:', error); // Log error
-            return res.status(500).send('Server error');
-        }
-
-        if (existingUser) {
-            return res.status(400).send('Email is already registered');
-        }
-
-        bcrypt.hash(password, 10, (err, hashedPassword) => {
-            if (err) {
-                console.error('Error hashing password:', err); // Log error
-                return res.status(500).send('Server error');
-            }
-
-            User.create(username, email, hashedPassword, role, (error, result) => {
-                if (error) {
-                    console.error('Error creating user:', error); // Log error
-                    return res.status(500).send('Error creating user');
-                }
-                res.status(201).send('User created successfully');
-            });
-        });
-    });
+// token; ex. localhost:3000/userProfile/jdwihdihdpqjhdpoqwhdphdejce79
+const createToken = (userId) => {
+    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
 
-// Render sign-in page
 exports.getSignIn = (req, res) => {
-    res.render('sign-in'); 
+    res.render('sign-in', { error: null }); // Pass error as null
 };
 
 // Handle sign-in form submission
-exports.signin = (req, res) => {
+exports.signin = async (req, res) => {
     const { email, password } = req.body;
 
-    User.findByEmail(email, (error, existingUser) => {
-        if (error) {
-            console.error('Error finding user by email:', error); // Log error
-            return res.status(500).send('Server error');
-        }
+    try {
+        const existingUser = await User.findByEmail(email);
 
         if (!existingUser) {
-            return res.status(400).send('Invalid email or password');
+            return res.render('sign-in', { error: 'Invalid email or password' });
         }
 
-        const isPasswordValid = bcrypt.compareSync(password, existingUser.password);
+        const isPasswordValid = await bcrypt.compare(password, existingUser.password);
         if (!isPasswordValid) {
-            return res.status(400).send('Invalid email or password');
+            return res.render('sign-in', { error: 'Invalid email or password' });
         }
 
-        // Set user session
-        req.session.userId = existingUser.id;
+        req.session.userId = existingUser.id;  
+        req.session.username = existingUser.username; 
         req.session.role = existingUser.role;
+
+        const token = createToken(existingUser.id);
+        req.session.token = token;
 
         // Redirect based on user role
         if (existingUser.role === 'admin') {
-            res.redirect('/admin'); // Redirect to admin page if the user is an admin
+            return res.redirect('/admin');
         } else {
-            res.redirect('/product'); // Redirect to product page if the user is a regular user
+            return res.redirect('/product');
         }
-    });
+    } catch (err) {
+        console.error('Login error:', err);
+        res.status(500).send('Internal server error');
+    }
 };
 
-// Logout user
-exports.logout = (req, res) => {
-    req.session.destroy((error) => {
-        if (error) {
-            console.error('Error destroying session:', error); // Log error
-            return res.status(500).send('Server error');
+// Render the sign-up page
+exports.getSignUp = (req, res) => {
+    res.render('sign-up', { error: null }); 
+};
+
+// Handle sign-up logic
+exports.signup = async (req, res) => {
+    const { username, email, password, confirmPassword } = req.body;
+
+    try {
+        // Check if the username is already taken
+        const existingUserByUsername = await User.findByUsername(username);
+        if (existingUserByUsername) {
+            return res.render('sign-up', { error: 'Username is already taken' });
         }
-        res.redirect('/sign-in'); // Redirect to sign-in page after logout
+
+        // Check if the email is already registered
+        const existingUserByEmail = await User.findByEmail(email);
+        if (existingUserByEmail) {
+            return res.render('sign-up', { error: 'Email is already registered' });
+        }
+
+        // Check if the passwords match
+        if (password !== confirmPassword) {
+            return res.render('sign-up', { error: 'Passwords do not match' });
+        }
+
+        // Create new user
+        const role = 'user'; 
+        await User.create(username, email, password, role);
+        res.redirect('/sign-in');
+    } catch (error) {
+        console.error(error);
+        return res.render('sign-up', { error: 'Server Error' });
+    }
+};
+
+// Handle logout logic
+exports.logout = (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.error(err);
+            return res.redirect('/'); 
+        }
+        res.clearCookie('connect.sid');
+        res.redirect('/');
     });
 };

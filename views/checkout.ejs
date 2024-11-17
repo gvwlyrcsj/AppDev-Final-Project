@@ -1,0 +1,146 @@
+<%- include('partials/header') %>
+
+<div class="container py-5" style="max-width: 600px;">
+    <div class="card shadow">
+        <div class="card-header text-center bg-primary text-white">
+            <h3>Receipt</h3>
+        </div>
+        <div class="card-body p-4">
+            <h5 class="text-center mb-4">Thank you for your purchase!</h5>
+
+            <!-- User Profile and Shipping Address Section -->
+            <div class="profile-section mb-4">
+                <label class="form-label">Name</label>
+                <div class="profile-display p-3 border rounded">
+                    <span id="userName"><%= userProfile.name %></span>
+                </div>
+
+                <label class="form-label">Phone</label>
+                <div class="profile-display p-3 border rounded">
+                    <span id="userPhone"><%= userProfile.phone %></span>
+                </div>
+
+                <label class="form-label">Shipping Address</label>
+                <div class="address-display p-3 border rounded">
+                    <span id="selectedAddress">
+                        <%= userProfile.street_name %>, 
+                        <%= userProfile.barangay %>, 
+                        <%= userProfile.city %> - 
+                        <%= userProfile.zip_code %>
+                    </span>
+                    <button class="btn btn-sm btn-link float-right" onclick="editProfile()">Edit Profile</button>
+                </div>
+
+                <form id="editProfileForm" style="display:none;" onsubmit="return false;">
+                    <input type="text" id="name" name="name" placeholder="Name" class="form-control mb-2" value="<%= userProfile.name %>">
+                    <input type="text" id="phone" name="phone" placeholder="Phone" class="form-control mb-2" value="<%= userProfile.phone %>">
+                    <input type="text" id="street_name" name="street_name" placeholder="Street Name" class="form-control mb-2" value="<%= userProfile.street_name %>">
+                    <input type="text" id="barangay" name="barangay" placeholder="Barangay" class="form-control mb-2" value="<%= userProfile.barangay %>">
+                    <input type="text" id="city" name="city" placeholder="City" class="form-control mb-2" value="<%= userProfile.city %>">
+                    <input type="text" id="zip_code" name="zip_code" placeholder="Zip Code" class="form-control mb-2" value="<%= userProfile.zip_code %>">
+                    <button class="btn btn-primary btn-sm" onclick="updateProfile()">Save</button>
+                    <button class="btn btn-secondary btn-sm" onclick="cancelEdit()">Cancel</button>
+                </form>
+            </div>
+
+            <% if (cartItems && cartItems.length > 0) { %>
+                <form id="checkoutForm" action="/checkout/confirm" method="POST">
+                    <table class="table table-borderless">
+                        <thead class="border-bottom">
+                            <tr>
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                <th class="text-center">Size</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-right">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% cartItems.forEach(item => { %>
+                                <tr>
+                                    <td>
+                                        <% if (item.imageUrl) { %>
+                                            <img src="<%= item.imageUrl %>" alt="<%= item.name %>" style="width: 60px; height: auto;">
+                                        <% } else { %>
+                                            <span>No image</span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= item.name %></td>
+                                    <td class="text-center"><%= item.size %></td>
+                                    <td class="text-center"><%= item.quantity %></td>
+                                    <td class="text-right">$<%= (item.price * item.quantity).toFixed(2) %></td>
+                                </tr>
+
+                                <!-- Hidden Inputs to pass selected item details to the server -->
+                                <input type="hidden" name="productId[]" value="<%= item.product_id %>">
+                                <input type="hidden" name="size[]" value="<%= item.size %>">
+                                <input type="hidden" name="quantity[]" value="<%= item.quantity %>">
+                                <input type="hidden" name="price[]" value="<%= item.price %>">
+                            <% }); %>
+                        </tbody>
+                    </table>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success">Buy Now</button>
+                        <button type="button" class="btn btn-danger" onclick="cancelOrder()">Cancel</button>
+                    </div>  
+                </form>
+            <% } else { %>
+                <div class="text-center">
+                    <p>No items to checkout.</p>
+                    <a href="/cart" class="btn btn-primary">Return to Cart</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script>
+    function editProfile() {
+        document.getElementById('editProfileForm').style.display = 'block';
+    }
+
+    function cancelEdit() {
+        document.getElementById('editProfileForm').style.display = 'none';
+    }
+
+    function updateProfile() {
+        var name = document.getElementById('name').value;
+        var phone = document.getElementById('phone').value;
+        var street_name = document.getElementById('street_name').value;
+        var barangay = document.getElementById('barangay').value;
+        var city = document.getElementById('city').value;
+        var zip_code = document.getElementById('zip_code').value;
+
+        fetch('/userProfile/update-profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, phone, street_name, barangay, city, zip_code })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Profile updated successfully') {
+                document.getElementById('userName').innerText = name;
+                document.getElementById('userPhone').innerText = phone;
+                document.getElementById('selectedAddress').innerText = `${street_name}, ${barangay}, ${city} - ${zip_code}`;
+                document.getElementById('editProfileForm').style.display = 'none';
+            } else {
+                alert('Error updating profile');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating profile');
+        });
+    }
+
+    function cancelOrder() {
+        if (confirm("Are you sure you want to cancel this order?")) {
+            window.location.href = '/checkout/cancel';
+        }
+    }
+</script>

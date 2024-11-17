@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+
+<div class="container py-5" style="max-width: 600px;">
+    <div class="card shadow">
+        <div class="card-header text-center bg-success text-white">
+            <h3>Checkout Successful!</h3>
+        </div>
+        <div class="card-body text-center">
+            <h5>Your Order ID: <%= orderId %></h5>
+            <p>Thank you for your purchase!</p>
+            <a href="/product" class="btn btn-primary">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

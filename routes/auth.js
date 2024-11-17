@@ -1,41 +1,18 @@
+// routes/auth.js
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
-const User = require('../models/User'); // Ensure correct path
+const authController = require('../controllers/authController'); // Ensure this path is correct
 
-// Render sign-up page
+// Route definitions
 router.get('/sign-up', (req, res) => {
-    res.render('sign-up'); // This will render the sign-up form
+    res.render('sign-up'); // Ensure you have a view called 'sign-up'
 });
 
-// Sign-up route for handling form submission
-router.post('/sign-up', (req, res) => {
-    const { username, email, password, role } = req.body;
+router.post('/sign-up', authController.signup);
 
-    User.findByEmail(email, (error, existingUser) => {
-        if (error) {
-            console.error('Error finding user by email:', error); // Log any error finding user
-            return res.status(500).send('Server error');
-        }
+router.get('/sign-in', authController.getSignIn);  // Ensure this function exists in authController
+router.post('/sign-in', authController.signin);
 
-        if (existingUser) {
-            return res.status(400).send('Email is already registered');
-        }
-
-        User.create(username, email, password, role, (error, result) => {
-            if (error) {
-                console.error('Error creating user:', error); // Log the specific error here
-                return res.status(500).send('Error creating user');
-            }
-            res.redirect('/sign-in'); // Redirect after successful sign-up
-        });
-    });
-});
-
-// Render sign-in page
-router.get('/sign-in', authController.getSignIn); // Ensure this is correctly defined
-
-// Sign-in route for handling form submission
-router.post('/sign-in', authController.signin); // Ensure this is correctly defined
+router.get('/logout', authController.logout);
 
 module.exports = router;

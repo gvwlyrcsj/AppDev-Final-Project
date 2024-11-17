@@ -1,0 +1,119 @@
+<%- include('partials/header') %>   
+
+<!-- Cart Section Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <h1 class="section-title position-relative text-center mb-5">Your Cart</h1>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <table class="table table-bordered">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th><input type="checkbox" id="select-all" /></th>
+                            <th>Product</th>
+                            <th>Product Name</th>
+                            <th>Size</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% cartItems.forEach(item => { %>
+                            <tr>
+                                <td><input type="checkbox" class="item-select" value="<%= item.id %>" /></td>
+                                <td>
+                                    <% if (item.imageUrl) { %>
+                                        <img src="<%= item.imageUrl %>" alt="<%= item.name %>" style="width: 100px; height: auto;">
+                                    <% } else { %>
+                                        No image
+                                    <% } %>                   
+                                </td>
+                                <td><%= item.name %></td>
+                                <td><%= item.size %></td>
+                                <td><%= item.quantity %></td>
+                                <td>$<%= item.price %></td>
+                                <td>$<%= item.price * item.quantity %></td>
+                                <td><button type="button" class="btn btn-danger btn-sm delete-btn" data-id="<%= item.id %>">Delete</button></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+                
+                <div class="text-right">
+                    <p class="font-weight-bold">Total for Selected Items: $<span id="selectedTotal">0</span></p>
+                </div>
+
+                <!-- Checkout Button for Selected Items -->
+                <div class="text-right mt-4">
+                    <form id="checkoutForm" action="/cart/checkout" method="POST">
+                        <input type="hidden" name="selectedItems" id="selectedItems" />
+                        <button type="button" id="checkoutButton" class="btn btn-primary btn-lg">Proceed to Checkout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Cart Section End -->
+
+<script>
+document.getElementById('select-all').addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    document.querySelectorAll('.item-select').forEach(checkbox => {
+        checkbox.checked = checked;
+    });
+    updateSelectedTotal();
+});
+
+// Calculate total for selected items
+document.querySelectorAll('.item-select').forEach(checkbox => {
+    checkbox.addEventListener('change', updateSelectedTotal);
+});
+
+function updateSelectedTotal() {
+    let selectedTotal = 0;
+    document.querySelectorAll('.item-select:checked').forEach(checkedBox => {
+        const row = checkedBox.closest('tr');
+        const totalPrice = parseFloat(row.querySelector('td:nth-child(7)').innerText.replace('$', ''));
+        selectedTotal += totalPrice;
+    });
+    document.getElementById('selectedTotal').textContent = selectedTotal.toFixed(2);
+}
+
+// Handle delete button
+document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const itemId = button.getAttribute('data-id');
+        fetch(`/cart/delete/${itemId}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.closest('tr').remove();
+                    alert('Item removed successfully.');
+                    updateSelectedTotal();
+                }
+            });
+    });
+});
+
+// Handle checkout button click
+document.getElementById('checkoutButton').addEventListener('click', () => {
+    const selectedIds = Array.from(document.querySelectorAll('.item-select:checked'))
+                            .map(checkbox => checkbox.value);
+    if (selectedIds.length === 0) {
+        alert('Please select at least one item to checkout.');
+        return;
+    }
+    document.getElementById('selectedItems').value = JSON.stringify(selectedIds);
+    document.getElementById('checkoutForm').submit();
+});
+</script>
+
+<%- include('partials/footer') %>   

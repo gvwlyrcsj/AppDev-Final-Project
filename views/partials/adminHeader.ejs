@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>i♡milktea</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="I Love MilkTea" name="I Love MilkTea">
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+
+    <!-- Favicon -->
+    <link href="img/logo.png" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+    .nav-bar::before {
+        background-color: #00b4d8;
+    }
+        .navbar-light .navbar-nav .nav-link:hover,
+        .navbar-light .navbar-nav .nav-link:focus {
+        color: #00b4d8;
+    }
+    
+    .bg-primary {
+        background-color: #00b4d8 !important;
+    }
+
+    .btn-secondary {
+        background-color: #00b4d8;
+        border-color: #00b4d8;
+    }
+
+    .btn-secondary:hover {
+        background-color: #00b4d8;
+        border-color: #00b4d8;
+    }
+
+    .btn-outline-light.btn-social:hover {
+        background-color: #00b4d8;
+        border-color: #00b4d8;
+    }
+    </style>
+</head>
+
+<body>
+<!-- Topbar Start -->
+<div class="container-fluid bg-primary py-3 d-none d-md-block">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-white px-3" href="/help">Help</a>
+                    <span class="text-white">|</span>
+                    <a class="text-white pl-3" href="/faq">FAQs</a>
+                </div>
+            </div>
+            <div class="col-md-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <div class="d-inline-flex align-items-center">
+                        <% if (username) { %>
+                            <a class="text-white px-3" href="/userProfile/<%= token %>"><%= username %></a>                        <span class="text-white">|</span>
+                            <a class="text-white pl-3" href="/logout">Logout</a>
+                        <% } else { %>
+                            <a class="text-white px-3" href="/sign-up">Sign Up</a>
+                            <span class="text-white">|</span>
+                            <a class="text-white pl-3" href="/sign-in">Login</a>
+                        <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Topbar End -->
+
+    <!-- Navbar Start -->
+    <div class="container-fluid position-relative nav-bar p-0">
+        <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
+            <nav class="navbar navbar-expand-lg bg-white navbar-light shadow p-lg-0">
+                <a href="/" class="navbar-brand d-block d-lg-none">
+                    <h1 class="m-0 display-4 text-primary"><span class="text-secondary">i</span>Love MilkTea</h1>
+                </a>
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                    <div class="navbar-nav ml-auto py-0">
+                        <a href="/admin" class="nav-item nav-link active">Dashboard</a>
+                        <a href="/manageProduct" class="nav-item nav-link">Manage Product</a>
+                        <a href="/orders" class="nav-item nav-link">Orders</a>
+                    </div>
+                    <a href="/" class="navbar-brand mx-5 d-none d-lg-block">
+                        <h1 class="m-0 display-4 text-primary"><span class="text-secondary">i</span>LoveMilkTea</h1>
+                    </a>
+                    <div class="navbar-nav mr-auto py-0">                      
+                        <a href="/report" class="nav-item nav-link">Report</a>
+                        <a href="/feedback" class="nav-item nav-link">Feedback</a>
+                        <a href="/notif" class="nav-item nav-link">Notification</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+    <!-- Navbar End -->

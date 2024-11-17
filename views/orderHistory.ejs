@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Order History</h2>
+    
+    <table class="table table-bordered" id="orderHistoryTable">
+        <thead class="bg-secondary text-white">
+            <tr>
+                <th>Order ID</th>
+                <th>Product</th>
+                <th>Product Name</th>
+                <th>Size</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+                <th>Order Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% orderHistory.forEach(order => { %>
+                <tr>
+                    <td><%= order.order_id %></td>
+                    <td>
+                        <% if (order.imageUrl) { %>
+                            <img src="<%= order.imageUrl %>" alt="<%= order.product_name %>" style="width: 50px; height: auto;">
+                        <% } else { %>
+                            No image
+                        <% } %>                   
+                    </td>
+                    <td><%= order.product_name %></td>
+                    <td><%= order.size %></td>
+                    <td><%= order.quantity %></td>
+                    <td>₱<%= order.price %></td>
+                    <td>₱<%= (order.price * order.quantity).toFixed(2) %></td>
+                    <td><%= new Date(order.order_date).toLocaleDateString() %></td>
+                    <td><%= order.status %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('partials/footer') %>
+
+<!-- DataTables JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#orderHistoryTable').DataTable({
+            dom: '<"top"lf>rt<"bottom"ip><"clear">'
+        });
+    });
+</script>
