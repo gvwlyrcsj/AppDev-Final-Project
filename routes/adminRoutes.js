@@ -12,4 +12,6 @@ const ensureAdmin = (req, res, next) => {
 
 router.get('/admin', ensureAdmin, adminController.getDashboardData);
 
-module.exports = router;
+// Report routes under admin 
+router.get('/report', ensureAdmin, adminController.getReportPage); 
+router.post('/report/generate', ensureAdmin, adminController.generateReport);module.exports = router;

@@ -70,7 +70,7 @@
                                     <td class="text-center"><%= item.quantity %></td>
                                     <td class="text-right">$<%= (item.price * item.quantity).toFixed(2) %></td>
                                 </tr>
-                            
+
                                 <!-- Hidden Inputs to pass selected item details to the server -->
                                 <input type="hidden" name="productId[]" value="<%= item.product_id %>">
                                 <input type="hidden" name="size[]" value="<%= item.size %>">
@@ -79,12 +79,12 @@
                             <% }); %>
                         </tbody>
                     </table>
-                
+
                     <div class="text-center mt-4">
                         <button type="submit" class="btn btn-success">Buy Now</button>
                         <button type="button" class="btn btn-danger" onclick="cancelOrder()">Cancel</button>
                     </div>  
-                </form>          
+                </form>
             <% } else { %>
                 <div class="text-center">
                     <p>No items to checkout.</p>

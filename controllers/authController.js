@@ -2,7 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// Function to create a token from user ID
+// token; ex. localhost:3000/userProfile/jdwihdihdpqjhdpoqwhdphdejce79
 const createToken = (userId) => {
     return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };

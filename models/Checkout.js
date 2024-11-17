@@ -9,23 +9,21 @@ async function createOrder(userId, totalAmount) {
                 console.error("Error creating order:", error);
                 return reject(error);
             }
-            resolve(results.insertId); // Return the new order ID
+            resolve(results.insertId); 
         });
     });
 }
 
 async function addToCart(user_id, product_id, size, quantity, price) {
-    // Check if user_id exists in user_profile table
     const userExistsQuery = 'SELECT * FROM user_profile WHERE user_id = ?';
     
     const [user] = await db.execute(userExistsQuery, [user_id]);
     
     if (user.length === 0) {
         console.error("User does not exist!");
-        return; // or throw an error if necessary
+        return; 
     }
 
-    // Proceed to insert into the cart if the user exists
     const query = 'INSERT INTO cart (user_id, product_id, size, quantity, price) VALUES (?, ?, ?, ?, ?)';
     
     try {
@@ -57,12 +55,10 @@ async function confirmCheckout(req, res) {
     const { productId, size, quantity, price } = req.query;
 
     try {
-        // Handle single product checkout
         if (productId && size && quantity && price) {
             const total = parseFloat(price) * parseInt(quantity);
             const orderId = await createOrder(userId, total);
 
-            // Adding a single item to the order_items table
             await addOrderItems(orderId, [{
                 product_id: productId,
                 size,
@@ -71,7 +67,7 @@ async function confirmCheckout(req, res) {
             }]);
 
             return res.render('checkout', {
-                cartItems: [/* cart item from query parameters */],
+                cartItems: [],
                 total,
                 shippingAddress,
                 product_id: product[0].id,
@@ -79,9 +75,8 @@ async function confirmCheckout(req, res) {
                 quantity: parseInt(quantity),
                 price: parseFloat(price)
             });
-                    }
+        }
 
-        // Process full cart checkout
         const [cartItems] = await db.promise().query(
             'SELECT * FROM cart WHERE user_id = ?', [userId]
         );
@@ -93,7 +88,6 @@ async function confirmCheckout(req, res) {
         const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
         const orderId = await createOrder(userId, total);
 
-        // Adding all cart items to the order_items table
         await addOrderItems(orderId, cartItems);
         await clearCart(userId);
 

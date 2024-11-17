@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userProfileController = require('../controllers/userProfileController');
-const { editAddressPage } = require('../controllers/userProfileController'); 
 
-router.get('/edit-address', editAddressPage);
 const isAuthenticated = (req, res, next) => {
     if (req.session.userId) {
         return next();
@@ -19,7 +17,4 @@ router.get('/checkoutSuccess', (req, res) => {
     res.render('checkoutSuccess'); 
 });
 router.post('/update-profile', userProfileController.updateUserProfile);
-router.get('/edit-address', userProfileController.editAddressPage);
-router.post('/edit-address', isAuthenticated, userProfileController.updateAddress);
-
 module.exports = router;

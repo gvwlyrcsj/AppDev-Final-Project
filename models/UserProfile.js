@@ -1,4 +1,3 @@
-// models/UserProfile.js
 const db = require('./db');
 
 const UserProfile = {

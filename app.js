@@ -46,13 +46,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Middleware to set local variables based on session
-app.use((req, res, next) => {
-    res.locals.username = req.session.username || null;
-    res.locals.loggedIn = !!req.session.userId; // Set loggedIn based on session
-    next();
-});
-
 const authMiddleware = require('./middleware/authMiddleware');
 app.use(authMiddleware);
 
@@ -70,15 +63,21 @@ app.use('/cart', cartRoutes);
 const userProfileRoutes = require('./routes/userProfileRoutes');
 app.use('/userProfile', userProfileRoutes);
 
-const kioskRoutes = require('./routes/kiosk');
+const kioskRoutes = require('./routes/kioskRoutes');
 app.use('/kiosk', kioskRoutes);
+
 app.get('/startKiosk', (req, res) => {
     res.sendFile(path.join(__dirname, './views/start-order.html'));
 });
 
+const checkoutRoutes = require('./routes/checkoutRoutes');
+app.use('/checkout', checkoutRoutes);
+
+const orderRoutes = require('./routes/orderRoutes');
+app.use('/', orderRoutes);
+
 app.use('/product', productRoutes);
 app.use('/manageProduct', require('./routes/manageProductRoutes'));
-app.use('/user', userProfileRoutes);
 
 // product
 app.get('/addProduct', require('./controllers/manageProductController').getAddProduct);
@@ -95,16 +94,8 @@ app.use('/help', require('./routes/helpRoutes'));
 app.use('/service', require('./routes/serviceRoutes'));
 app.use('/feedback', require('./routes/feedbackRoutes'));
 
-const checkoutRoutes = require('./routes/checkoutRoutes');
-app.use('/checkout', checkoutRoutes);
-app.use('/', checkoutRoutes);
-app.use('/profile', userProfileRoutes);
-
-const orderRoutes = require('./routes/orderRoutes');
-app.use('/', orderRoutes);
-
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3007;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
