@@ -11,7 +11,7 @@ exports.getAll = (callback) => {
     });
 };
 
-// Add a new product
+// Add a new product. 
 exports.create = (name, description, price, imageUrl, callback) => {
     const query = 'INSERT INTO addproducts (name, description, price, imageUrl) VALUES (?, ?, ?, ?)';
     db.query(query, [name, description, price, imageUrl], (err, results) => {
