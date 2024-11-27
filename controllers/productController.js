@@ -19,7 +19,32 @@ exports.getManageProducts = (req, res) => {
             console.error('Error fetching products:', err);
             return res.status(500).send('Error fetching products');
         }
-        res.render('manageProduct', { products });
+
+        // Check for low stock products
+        products.forEach(product => {
+            if (product.quantity_in_stock < 100) {
+                console.warn(`Warning: Low stock for product ID ${product.id}`);
+            }
+        });
+
+        res.render('manageProduct', {
+            products,
+            userId: res.locals.userId,
+            username: res.locals.username
+        });
+    });
+};
+
+// ... other controller methods unchanged
+
+exports.fetchProducts = (req, res, next) => {
+    Product.getAll((err, products) => {
+        if (err) {
+            console.error('Error fetching products:', err);
+            return res.status(500).send('Error fetching products');
+        }
+        res.locals.products = products;
+        next();
     });
 };
 

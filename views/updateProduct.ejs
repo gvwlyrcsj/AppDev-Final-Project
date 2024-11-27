@@ -1,41 +1,124 @@
 <%- include('partials/adminHeader') %>   
-    <div class="container mt-5">
-        <h2>Update Product</h2>
-        <form action="/updateProduct/<%= product.id %>" method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
-            </div>
-            
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" name="description" required><%= product.description %></textarea>
-            </div>
-            
-            <div class="mb-3">
-                <label for="price" class="form-label">Price per unit</label>
-                <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" required>
-            </div>
+<div class="container mt-5">
+    <h2>Update Product</h2>
+    <form action="/updateProduct/<%= product.id %>" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" required><%= product.description %></textarea>
+        </div>
+        
+        <div class="mb-3">
+            <label for="price" class="form-label">Price per unit</label>
+            <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" required>
+        </div>
 
-            <!-- Quantity in Stock Field -->
-            <div class="mb-3">
-                <label for="quantity_in_stock" class="form-label">Quantity in Stock</label>
-                <input type="number" class="form-control" id="quantity_in_stock" name="quantity_in_stock" value="<%= product.quantity_in_stock %>" required>
+        <!-- Quantity in Stock Field -->
+        <div class="mb-3">
+            <label for="quantity_in_stock" class="form-label">Quantity in Stock</label>
+            <div class="input-group">
+                <input type="number" class="form-control" id="quantity_in_stock" name="quantity_in_stock" value="<%= product.quantity_in_stock %>" disabled>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="showAddQuantityModal('<%= product.id %>', '<%= product.quantity_in_stock %>')">+</button>
+                </div>
             </div>
+        </div>
 
-            <!-- Unit Field -->
-            <div class="mb-3">
-                <label for="unit" class="form-label">Unit</label>
-                <input type="text" class="form-control" id="unit" name="unit" value="<%= product.unit %>" required>
-            </div>
+        <!-- Unit Field -->
+        <div class="mb-3">
+            <label for="unit" class="form-label">Unit</label>
+            <input type="text" class="form-control" id="unit" name="unit" value="<%= product.unit %>" required>
+        </div>
 
-            <div class="mb-3">
-                <label for="image" class="form-label">Upload New Image</label>
-                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+        <div class="mb-3">
+            <label for="image" class="form-label">Upload New Image</label>
+            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Update Product</button>
+        <a href="/manageProduct" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<!-- Add Quantity Modal -->
+<div class="modal fade" id="addQuantityModal" tabindex="-1" role="dialog" aria-labelledby="addQuantityModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addQuantityModalLabel">Add Quantity</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            
-            <button type="submit" class="btn btn-primary">Update Product</button>
-            <a href="/manageProduct" class="btn btn-secondary">Cancel</a>
-        </form>
+            <div class="modal-body">
+                <form id="addQuantityForm">
+                    <input type="hidden" name="productId" id="productId">
+                    <div class="form-group">
+                        <label for="currentQuantity">Current Quantity</label>
+                        <input type="text" class="form-control" id="currentQuantity" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="addQuantity">Add Quantity</label>
+                        <input type="number" class="form-control" id="addQuantity" name="addQuantity" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </div>
+        </div>
     </div>
-<%- include('partials/adminFooter') %>   
+</div>
+
+<%- include('partials/adminFooter') %>
+
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable
+        $('#productsTable').DataTable({
+            paging: true, 
+            searching: true,
+            ordering: true,
+            order: [[0, 'asc']] // Default order by ID in ascending order
+        });
+
+        // Handle form submission with AJAX
+        $('#addQuantityForm').submit(function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const productId = $('#productId').val();  // Get the productId from the hidden input
+            const addQuantity = $('#addQuantity').val();  // Get the quantity to be added
+
+            // Update the AJAX request URL to use the correct endpoint for quantity update
+            $.ajax({
+                url: '/updateProductQuantity/' + productId, // This is your separate route for updating quantity
+                method: 'POST',
+                data: { quantity: addQuantity },
+                success: function(response) {
+                    // Update the quantity in the input field
+                    const currentQuantity = parseInt($('#quantity_in_stock').val()); // Get the current quantity
+                    const newQuantity = currentQuantity + parseInt(addQuantity); // Calculate the new quantity
+                    $('#quantity_in_stock').val(newQuantity); // Update the input field with the new quantity
+
+                    // Optionally, you can also update the displayed value elsewhere if needed
+                    $('#currentQuantity').val(newQuantity); // Update the modal to show the new quantity
+
+                    // Hide the modal after updating
+                    $('#addQuantityModal').modal('hide');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error updating product quantity:', error);
+                }
+            });
+        });
+    });
+
+    // Show the modal to add quantity
+    function showAddQuantityModal(productId, currentQuantity) {
+        $('#productId').val(productId);
+        $('#currentQuantity').val(currentQuantity); // Ensure this is showing correctly in the modal
+        $('#addQuantityModal').modal('show');  // Make sure the modal shows
+    }
+</script>

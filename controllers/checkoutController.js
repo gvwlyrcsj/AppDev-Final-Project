@@ -123,13 +123,25 @@ const confirmCheckout = async (req, res) => {
 // Checkout Success Page
 const checkoutSuccess = async (req, res) => {
     const { orderId } = req.query;
+
     try {
         if (!orderId) {
             return res.status(400).send("Order ID is required");
         }
 
-        // Logic to fetch order details or display confirmation
-        res.render('checkoutSuccess', { orderId });
+        // Fetch order details including order items
+        const [orderItems] = await db.promise().query(
+            'SELECT oi.*, p.name FROM order_items oi JOIN addproducts p ON oi.product_id = p.id WHERE oi.order_id = ?',
+            [orderId]
+        );
+
+        if (orderItems.length === 0) {
+            return res.status(404).send('Order items not found');
+        }
+
+        // Render the success page with order items
+        res.render('checkoutSuccess', { orderId, orderItems });
+
     } catch (error) {
         console.error("Error displaying checkout success page:", error);
         res.status(500).send("Internal Server Error");

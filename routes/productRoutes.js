@@ -6,6 +6,8 @@ const productController = require('../controllers/productController');
 
 router.get('/search', productController.search);
 
+router.use(productController.fetchProducts);
+
 // Function to fetch products from the database
 function getProductsFromDatabase(callback) {
     const query = "SELECT * FROM addproducts WHERE description LIKE '%milktea%'";
@@ -34,19 +36,37 @@ router.get('/:id', (req, res) => {
     const productId = req.params.id;
 
     // Fetch product by ID from the database
-    const query = 'SELECT * FROM addproducts WHERE id = ?';
-    pool.query(query, [productId], (err, results) => {
+    const productQuery = 'SELECT * FROM addproducts WHERE id = ?';
+    const stockQuery = `
+        SELECT 
+            SUM(CASE WHEN description LIKE '%Straw%' THEN quantity_in_stock ELSE 0 END) AS strawsInStock,
+            SUM(CASE WHEN description LIKE '%Milk%' THEN quantity_in_stock ELSE 0 END) AS milkInStock
+        FROM addproducts
+    `;
+
+    pool.query(productQuery, [productId], (err, productResults) => {
         if (err) {
             console.error('Error fetching product details:', err);
             return res.status(500).send('Internal Server Error');
         }
         
-        if (results.length === 0) {
+        if (productResults.length === 0) {
             return res.status(404).send('Product not found');
         }
 
-        const product = results[0]; // Get the first product
-        res.render('productDetails', { product: product }); 
+        const product = productResults[0]; // Get the first product
+
+        pool.query(stockQuery, (err, stockResults) => {
+            if (err) {
+                console.error('Error fetching stock status:', err);
+                return res.status(500).send('Internal Server Error');
+            }
+
+            const strawsOutOfStock = stockResults[0].strawsInStock <= 0;
+            const milkOutOfStock = stockResults[0].milkInStock <= 0;
+
+            res.render('productDetails', { product, strawsOutOfStock, milkOutOfStock });
+        });
     });
 });
 

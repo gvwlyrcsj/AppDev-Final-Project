@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const cartController = require('../controllers/cartController');
 const authMiddleware = require('../middleware/authMiddleware');
-
 // Route to get the user's cart
 router.get('/', cartController.getCart);
 router.post('/checkout', cartController.checkout);

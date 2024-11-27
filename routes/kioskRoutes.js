@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../models/db');
-const productController = require('../controllers/productController');
-
 
 // Function to fetch products from the database
 function getProductsFromDatabase(callback) {

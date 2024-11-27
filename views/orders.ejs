@@ -1,78 +1,184 @@
-<%- include('partials/adminHeader') %> 
+<%- include('partials/adminHeader') %>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>All Orders</title>
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
-</head>
-<body>
+<div class="container mt-5">
     <h1>All Orders</h1>
-    <table id="ordersTable" class="display">
-        <thead>
+    
+    <!-- Filter Buttons -->
+    <div class="btn-group mb-3" role="group" aria-label="Order Status Filter">
+        <button type="button" class="btn" style="background-color: #03045e; color: white;" onclick="filterOrders('all')">All</button>
+        <button type="button" class="btn" style="background-color: #0077b6; color: white;" onclick="filterOrders('pending')">Pending</button>
+        <button type="button" class="btn" style="background-color: #00b4d8; color: white;" onclick="filterOrders('preparing')">Preparing</button>
+        <button type="button" class="btn" style="background-color: #90e0ef; color: black;" onclick="filterOrders('delivered')">Delivered</button>
+    </div>
+
+    <table id="ordersTable" class="table table-bordered">
+        <thead class="bg-secondary text-white">
             <tr>
                 <th>Order ID</th>
                 <th>Order Date</th>
-                <th>Product Name</th>
-                <th>Size</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Image</th>
-                <th>Status</th> <!-- Moved Status to the last column -->
+                <th>Status</th>
+                <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="ordersBody">
             <% allOrders.forEach(order => { %>
-                <tr>
+                <tr data-status="<%= order.status %>">
                     <td><%= order.order_id %></td>
-                    <td><%= order.formattedOrderDate %></td>
-                    <td><%= order.product_name %></td>
-                    <td><%= order.size %></td>
-                    <td><%= order.quantity %></td>
-                    <td><%= order.price %></td>
-                    <td><img src="<%= order.imageUrl %>" alt="<%= order.product_name %>" width="50" /></td>
+                    <td><%= order.order_date %></td>
                     <td>
                         <select class="order-status" data-order-id="<%= order.order_id %>">
-                            <option value="pending" <%= !order.status || order.status === 'pending' ? 'selected' : '' %>>Pending</option> <!-- Pending added last -->
+                            <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Pending</option>
                             <option value="preparing" <%= order.status === 'preparing' ? 'selected' : '' %>>Preparing</option>
                             <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
                         </select>
+                    </td>
+                    <td>
+                        <button class="btn btn-info" onclick="viewOrderDetails('<%= order.order_id %>')">View Details</button>
                     </td>
                 </tr>
             <% }) %>
         </tbody>
     </table>
+</div>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <!-- DataTables JS -->
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#ordersTable').DataTable();
+<!-- Order Details Modal -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="printableArea">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderDetailsModalLabel">Order Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Order ID:</strong> <span id="modalOrderId"></span></p>
+                <p><strong>User Name:</strong> <span id="modalUserName"></span></p>
+                <p><strong>Phone:</strong> <span id="modalUserPhone"></span></p>
+                <p><strong>Address:</strong> <span id="modalUserAddress"></span></p>
+                <h5>Products:</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Size</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Image</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalProductsBody"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="printOrderDetails()">Print</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-            $('.order-status').change(function() {
-                var orderId = $(this).data('order-id');
-                var newStatus = $(this).val();
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+    var allOrders = <%- JSON.stringify(allOrders) %>;
 
-                $.ajax({
-                    url: '/update-order-status',
-                    method: 'POST',
-                    data: {
-                        orderId: orderId,
-                        status: newStatus
-                    },
-                    success: function(response) {
-                        alert('Order status updated successfully!');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error updating order status:', error);
-                        alert('Error updating order status. Please try again.');
-                    }
-                });
+    $(document).ready(function() {
+        $('#ordersTable').DataTable({
+            "order": [[1, "desc"]] // Sort by order date in descending order
+        });
+
+        $('.order-status').change(function() {
+            var orderId = $(this).data('order-id');
+            var newStatus = $(this).val();
+
+            $.ajax({
+                url: '/update-order-status',
+                method: 'POST',
+                data: {
+                    orderId: orderId,
+                    status: newStatus
+                },
+                success: function(response) {
+                    alert('Order status updated successfully!');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error updating order status:', error);
+                    alert('Error updating order status. Please try again.');
+                }
             });
         });
-    </script>
-</body>
-</html>
+    });
+
+    function filterOrders(status) { 
+        if (status === 'all') { 
+            $('#ordersBody tr').show(); 
+        } else { 
+            $('#ordersBody tr').hide().filter('[data-status="' + status + '"]').show(); 
+        } 
+    }
+    
+    function viewOrderDetails(orderId) {
+        const order = allOrders.find(order => String(order.order_id) === String(orderId));
+        if (!order) {
+            alert('Order not found!');
+            return;
+        }
+
+        $('#modalOrderId').text(order.order_id || 'N/A');
+        $('#modalUserName').text(order.user?.name || 'N/A');
+        $('#modalUserPhone').text(order.user?.phone || 'N/A');
+        $('#modalUserAddress').text(order.user?.address || 'N/A');
+
+        $('#modalProductsBody').empty();
+        if (order.products && order.products.length > 0) {
+            order.products.forEach(product => {
+                $('#modalProductsBody').append(`
+                    <tr>
+                        <td>${product.product_name || 'N/A'}</td>
+                        <td>${product.size || 'N/A'}</td>
+                        <td>${product.quantity || 0}</td>
+                        <td>₱${(product.price * product.quantity).toFixed(2)}</td>
+                        <td><img src="${product.imageUrl || ''}" alt="${product.product_name || ''}" width="50" /></td>
+                    </tr>
+                `);
+            });
+        } else {
+            $('#modalProductsBody').append('<tr><td colspan="5">No products found</td></tr>');
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'), {});
+        modal.show();
+    }
+
+    function printOrderDetails() {
+    html2canvas(document.getElementById('printableArea')).then(canvas => {
+        const dataUrl = canvas.toDataURL();
+        const printWindow = window.open('', '_blank');
+        
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Order Details</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        img { max-width: 100%; height: auto; }
+                    </style>
+                </head>
+                <body>
+                    <img src="${dataUrl}" />
+                </body>
+            </html>
+        `);
+
+        // Ensure the content is fully rendered
+        printWindow.document.close();
+
+        // Trigger print and close once the content has loaded
+        printWindow.onload = function() {
+            printWindow.print();
+            printWindow.close();
+        };
+    });
+}
+</script>

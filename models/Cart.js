@@ -1,6 +1,6 @@
 const pool = require('./db');
 
-// Function to add a product to the cart (Promise-based)
+// Function to add a product to the cart
 function addToCart(userId, productId, size, quantity, price) {
     return new Promise((resolve, reject) => {
         const checkQuery = 'SELECT id, quantity FROM cart WHERE user_id = ? AND product_id = ? AND size = ?';
@@ -12,8 +12,8 @@ function addToCart(userId, productId, size, quantity, price) {
             if (results.length > 0) {
                 const existingItem = results[0];
                 const newQuantity = parseInt(existingItem.quantity, 10) + parseInt(quantity, 10);
-                const updateQuery = 'UPDATE cart SET quantity = ? WHERE id = ?';
-                const updateValues = [newQuantity, existingItem.id];
+                const updateQuery = 'UPDATE cart SET quantity = ?, price = ? WHERE id = ?';
+                const updateValues = [newQuantity, price, existingItem.id];
 
                 pool.execute(updateQuery, updateValues, (error, results) => {
                     if (error) return reject(error);
@@ -28,6 +28,29 @@ function addToCart(userId, productId, size, quantity, price) {
                     resolve(results);
                 });
             }
+        });
+    });
+}
+
+// Function to update an item in the cart
+function updateItem(id, quantity, size, price) {
+    return new Promise((resolve, reject) => {
+        const checkQuery = 'SELECT id FROM cart WHERE id = ?';
+        
+        pool.execute(checkQuery, [id], (error, results) => {
+            if (error) return reject(error);
+
+            if (results.length === 0) {
+                return reject(new Error('Item not found in cart'));
+            }
+
+            const updateQuery = 'UPDATE cart SET quantity = ?, size = ?, price = ? WHERE id = ?';
+            const values = [quantity, size, price, id];
+
+            pool.execute(updateQuery, values, (error, results) => {
+                if (error) return reject(error);
+                resolve(results);
+            });
         });
     });
 }
@@ -90,5 +113,6 @@ module.exports = {
     getCartDetails,
     removeItem,
     getSelectedCartDetails,
-    removeItems
+    removeItems,
+    updateItem,
 };

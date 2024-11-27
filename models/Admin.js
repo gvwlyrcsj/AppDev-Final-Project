@@ -57,3 +57,31 @@ exports.getPast7DaysSales = async () => {
     `);
     return rows;
 };
+
+exports.getYearlySales = async () => {
+    const [rows] = await db.promise().query(`
+        SELECT DATE(order_date) AS date, SUM(total_amount) AS total
+        FROM orders
+        WHERE YEAR(order_date) = YEAR(CURDATE())
+        GROUP BY DATE(order_date)
+        ORDER BY DATE(order_date)
+    `);
+    return rows;
+};
+
+exports.getYearlyBestSeller = async () => {
+    const [rows] = await db.promise().query(`
+        SELECT addproducts.id AS product_id, 
+               addproducts.name AS product_name, 
+               addproducts.imageUrl AS product_image, 
+               SUM(order_items.quantity) AS total_sold
+        FROM order_items
+        JOIN orders ON order_items.order_id = orders.id
+        JOIN addproducts ON order_items.product_id = addproducts.id
+        WHERE YEAR(orders.order_date) = YEAR(CURDATE())
+        GROUP BY addproducts.id, addproducts.name, addproducts.imageUrl
+        ORDER BY total_sold DESC
+        LIMIT 1
+    `);
+    return rows.length > 0 ? rows[0] : null; // Return the top-selling product or null if no data
+};

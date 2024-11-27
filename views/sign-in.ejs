@@ -19,8 +19,8 @@
             background-color: #f8f9fa; 
             border-radius: 8px; 
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
-            margin-top: 50px; /* Add spacing below the header */
-            margin-bottom: 50px; /* Add spacing above the footer */
+            margin-top: 50px; 
+            margin-bottom: 50px; 
         }
     
         .page-header {
@@ -89,11 +89,11 @@
     </div>
 
     <!-- Login Form Start -->
-    <div class="signup-container">
+    <div class="signup-container" id="loginForm">
         <h1 class="mb-4 text-center">Log In</h1>
 
         <!-- Display Error Message -->
-        <% if (error) { %>
+        <% if (error && error.length > 0) { %>
             <div class="alert alert-danger" role="alert">
                 <%= error %>
             </div>
@@ -108,11 +108,54 @@
             </div>
             <button type="submit" class="btn btn-primary btn-block">Log In</button>
         </form>
+
         <p class="text-center mt-3">
+            <a href="#" id="forgotPasswordLink" class="text-primary">Forgot Password?</a>
+        </p>
+        <p class="text-center">
             Don't have an account? <a href="/sign-up" class="text-primary">Sign Up</a>
         </p>
     </div>
-    <!-- Login Form End -->
 
+    <!-- Forgot Password Form Start -->
+    <div class="signup-container" id="forgotPasswordContainer" style="display: none;">
+        <h1 class="mb-4 text-center">Forgot Password</h1>
+        
+        <!-- Display Forgot Password Success/Error Message -->
+        <% if (success && success.length > 0) { %>
+            <div class="alert alert-success" role="alert">
+                <%= success %>
+            </div>
+        <% } else if (error && error.length > 0) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= error %>
+            </div>
+        <% } %>
+        
+        <form action="/forgot-password" method="POST">
+            <div class="form-group">
+                <input type="email" class="form-control" id="forgotEmail" name="email" placeholder="Email address" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
+        </form>
+        
+        <p class="text-center mt-3">
+            <a href="#" id="backToLoginLink" class="text-primary">Back to Login</a>
+        </p>
+    </div>
+    <!-- Forgot Password Form End -->
+
+    <script>
+        // Toggle between Login and Forgot Password Forms
+        document.getElementById('forgotPasswordLink').addEventListener('click', function () {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('forgotPasswordContainer').style.display = 'block';
+        });
+
+        document.getElementById('backToLoginLink').addEventListener('click', function () {
+            document.getElementById('forgotPasswordContainer').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        });
+    </script>
 </body>
 </html>

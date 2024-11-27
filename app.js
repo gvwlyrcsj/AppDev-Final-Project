@@ -4,8 +4,12 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const db = require('./models/db');
-const app = express();
+const flash = require('connect-flash');
 require('dotenv').config();
+
+const app = express();
+
+app.use(flash());
 
 // Set view engine
 app.set('view engine', 'ejs');
@@ -25,6 +29,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+
 
 app.get('/', (req, res) => {
     res.render('about', {
@@ -94,8 +99,45 @@ app.use('/help', require('./routes/helpRoutes'));
 app.use('/service', require('./routes/serviceRoutes'));
 app.use('/feedback', require('./routes/feedbackRoutes'));
 
+
+// app.js
+const { saveOrderToDatabase } = require('./models/kioskDb'); // Import the function to save the order.
+
+app.use(bodyParser.json()); // Middleware to parse JSON request body.
+
+app.post('/submitOrder', (req, res) => {
+    const orderData = req.body.orders; // The orders array sent from the client
+    const totalAmount = req.body.totalAmount; // The total amount sent from the client
+    const dineOutOption = req.body.dineOutOption; // Whether the order is for dine-in or take-out
+
+    // Save the order to the database
+    saveOrderToDatabase(orderData, totalAmount, dineOutOption)
+        .then(() => {
+            res.status(200).json({ message: 'Order placed successfully!' });
+        })
+        .catch((error) => {
+            res.status(500).json({ message: 'Error placing order!', error: error.message });
+        });
+});
+const { updateStockLevels } = require('./models/kioskDb'); // Import the function to update stock levels
+
+app.post('/submitInventory', (req, res) => {
+    const orderData = req.body.orders; // The orders array sent from the client
+    const totalAmount = req.body.totalAmount; // The total amount sent from the client
+    const dineOutOption = req.body.dineOutOption; // Whether the order is for dine-in or take-out
+
+    // Update the stock levels in the database
+    updateStockLevels(orderData)
+        .then(() => {
+            res.status(200).json({ message: 'Order placed successfully!' });
+        })
+        .catch((error) => {
+            res.status(500).json({ message: 'Error placing order!', error: error.message });
+        });
+});
+
 // Start the server
-const PORT = process.env.PORT || 3007;
+const PORT = process.env.PORT || 300;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

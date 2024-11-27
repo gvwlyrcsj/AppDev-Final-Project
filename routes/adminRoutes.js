@@ -12,6 +12,11 @@ const ensureAdmin = (req, res, next) => {
 
 router.get('/admin', ensureAdmin, adminController.getDashboardData);
 
-// Report routes under admin 
 router.get('/report', ensureAdmin, adminController.getReportPage); 
-router.post('/report/generate', ensureAdmin, adminController.generateReport);module.exports = router;
+router.post('/report/generate', ensureAdmin, adminController.generateReport);
+
+router.get('/manageAdmin', ensureAdmin, adminController.getManageAdminPage);
+router.post('/searchUser', ensureAdmin, adminController.searchUser); 
+router.post('/updateUserRole', ensureAdmin, adminController.updateUserRole);
+
+module.exports = router;

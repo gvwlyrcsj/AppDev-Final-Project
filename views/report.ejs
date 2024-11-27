@@ -1,4 +1,4 @@
-<%- include('partials/header') %>
+<%- include('partials/adminHeader') %>
 
 <div class="container">
     <h2 class="mt-5">Sales Reports</h2>
@@ -9,8 +9,9 @@
                 <option value="daily">Daily Sales</option>
                 <option value="weekly">Weekly Sales</option>
                 <option value="monthly">Monthly Sales</option>
+                <option value="yearly">Yearly Sales</option>
                 <option value="custom">Custom Date Range</option>
-            </select>
+            </select>                
         </div>
         <div class="form-group" id="customDateRange" style="display: none;">
             <label for="startDate">Start Date:</label>
@@ -24,12 +25,11 @@
     <% if (rows && rows.length > 0) { %>
     <h2 class="mt-5">Sales Report Results</h2>
     <table class="table table-striped" id="reportTable">
-        <thead>
+        <thead class="bg-secondary text-white">
             <tr>
                 <th>Date</th>
                 <th>Order Count</th>
                 <th>Total Sale</th>
-                <th>Best Seller</th>
             </tr>
         </thead>
         <tbody>
@@ -37,8 +37,7 @@
                 <tr>
                     <td><%= row.date %></td>
                     <td><%= row.order_count %></td>
-                    <td>$<%= row.total_sale %></td>
-                    <td><%= bestSellers[row.date] ? `${bestSellers[row.date].product_name} (${bestSellers[row.date].total_quantity})` : 'N/A' %></td>
+                    <td>₱<%= row.total_sale %></td>
                 </tr>
             <% }); %>
         </tbody>

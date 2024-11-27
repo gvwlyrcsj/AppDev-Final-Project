@@ -9,13 +9,17 @@ exports.getOrderHistory = async (req, res) => {
 
         const [orderHistory] = await pool.promise().query(
             `SELECT orders.id AS order_id, orders.order_date, orders.order_status AS status, 
+                    orders.payment_method, orders.total_amount,
                     order_items.product_id, order_items.size, order_items.quantity, order_items.price, 
-                    addproducts.name AS product_name, addproducts.imageUrl 
+                    addproducts.name AS product_name, addproducts.imageUrl,
+                    user_profile.name AS user_name, user_profile.phone AS user_phone, 
+                    user_profile.street_name, user_profile.city, user_profile.barangay, user_profile.zip_code
              FROM orders 
              JOIN order_items ON orders.id = order_items.order_id 
              JOIN addproducts ON order_items.product_id = addproducts.id 
+             JOIN user_profile ON orders.user_id = user_profile.user_id
              WHERE orders.user_id = ? 
-             ORDER BY orders.order_date ASC`, 
+             ORDER BY orders.order_date DESC`, 
             [userId]
         );
 
@@ -31,36 +35,52 @@ exports.getAllOrders = async (req, res) => {
         const [allOrders] = await pool.promise().query(
             `SELECT orders.id AS order_id, orders.order_date, orders.order_status AS status, 
                     order_items.product_id, order_items.size, order_items.quantity, order_items.price, 
-                    addproducts.name AS product_name, addproducts.imageUrl 
+                    addproducts.name AS product_name, addproducts.imageUrl, 
+                    user_profile.name AS user_name, user_profile.phone AS user_phone, 
+                    CONCAT(user_profile.street_name, ', ', user_profile.barangay, ', ', user_profile.city, ' - ', user_profile.zip_code) AS user_address
              FROM orders 
              JOIN order_items ON orders.id = order_items.order_id 
              JOIN addproducts ON order_items.product_id = addproducts.id 
-             ORDER BY orders.order_date ASC`
+             JOIN user_profile ON orders.user_id = user_profile.user_id
+             ORDER BY orders.order_date DESC`
         );
 
-        // Format the order date on the server side and ensure status defaults to 'pending'
-        allOrders.forEach(order => {
+        const ordersMap = allOrders.reduce((acc, order) => {
             const date = new Date(order.order_date);
-            const day = ("0" + date.getDate()).slice(-2);
-            const month = ("0" + (date.getMonth() + 1)).slice(-2);
-            const year = date.getFullYear();
-            const hours = date.getHours();
-            const minutes = ("0" + date.getMinutes()).slice(-2);
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            const formattedHours = hours % 12 || 12;
-            order.formattedOrderDate = `${day}/${month}/${year} ${formattedHours}:${minutes} ${ampm}`;
+            const formattedOrderDate = `${("0" + (date.getMonth() + 1)).slice(-2)}/${("0" + date.getDate()).slice(-2)}/${date.getFullYear()}`;
+            const orderId = order.order_id;
 
-            if (!order.status) {
-                order.status = 'pending';  
+            if (!acc[orderId]) {
+                acc[orderId] = {
+                    order_id: orderId,
+                    order_date: formattedOrderDate,
+                    status: order.status,
+                    user: {
+                        name: order.user_name,
+                        phone: order.user_phone,
+                        address: order.user_address
+                    },
+                    products: []
+                };
             }
-        });
+            acc[orderId].products.push({
+                product_id: order.product_id,
+                size: order.size,
+                quantity: order.quantity,
+                price: order.price,
+                product_name: order.product_name,
+                imageUrl: order.imageUrl
+            });
+            return acc;
+        }, {});
 
-        res.render('orders', { allOrders });
+        res.render('orders', { allOrders: Object.values(ordersMap) });
     } catch (error) {
         console.error("Error fetching all order histories:", error);
         res.status(500).send("Error fetching all order histories");
     }
 };
+
 exports.updateOrderStatus = async (req, res) => {
     try {
         const { orderId, status } = req.body;

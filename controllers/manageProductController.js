@@ -116,3 +116,22 @@ exports.deleteProduct = (req, res) => {
         res.redirect('/manageProduct');
     });
 };
+
+exports.updateProductQuantity = (req, res) => {
+    const productId = req.params.id;
+    const additionalQuantity = parseInt(req.body.quantity);
+
+    Product.findById(productId, (error, product) => {
+        if (error || !product) {
+            return res.status(404).send('Product not found');
+        }
+
+        const newQuantity = product.quantity_in_stock + additionalQuantity;
+        Product.updateQuantity(productId, newQuantity, (error) => {
+            if (error) {
+                return res.status(500).send('Error updating product quantity');
+            }
+            res.send('Product quantity updated successfully');
+        });
+    });
+};

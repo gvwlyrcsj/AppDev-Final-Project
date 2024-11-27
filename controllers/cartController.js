@@ -84,19 +84,20 @@ exports.removeItem = async (req, res) => {
     }
 };
 
-exports.checkoutSuccess = async (req, res) => {
-    const userId = req.session.userId;
-    const cartItems = req.session.cartItems;
+exports.checkoutSuccess = (req, res) => {
+    const orderId = req.params.id;
 
-    if (!userId || !cartItems || cartItems.length === 0) {
-        return res.status(400).send('No items to checkout');
-    }
+    // Fetch order details including order items
+    Order.findById(orderId, (err, order) => {
+        if (err || !order) {
+            return res.status(404).send('Order not found');
+        }
 
-    try {
-        await Cart.removeItems(cartItems.map(item => item.id));
-        res.render('checkoutSuccess', { cartItems, total: cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) });
-    } catch (error) {
-        console.error('Error during checkout:', error);
-        res.status(500).send('Internal Server Error');
-    }
+        const orderItems = order.items;
+
+        res.render('checkoutSuccess', {
+            orderItems: orderItems,
+            orderId: orderId
+        });
+    });
 };

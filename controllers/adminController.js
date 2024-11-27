@@ -64,7 +64,7 @@ exports.generateReport = async (req, res) => {
                          WHERE YEARWEEK(order_date, 1) = YEARWEEK(CURDATE(), 1)
                          GROUP BY DATE_FORMAT(order_date, '%m/%d/%Y')
                          UNION ALL
-                         SELECT 'WEEK TOTAL' AS date, 
+                         SELECT 'TOTAL' AS date, 
                                 SUM(order_count) AS order_count, 
                                 SUM(total_sale) AS total_sale 
                          FROM (
@@ -86,7 +86,7 @@ exports.generateReport = async (req, res) => {
                          WHERE MONTH(order_date) = MONTH(CURDATE())
                          GROUP BY DATE_FORMAT(order_date, '%m/%d/%Y')
                          UNION ALL
-                         SELECT 'WEEK TOTAL' AS date, 
+                         SELECT 'TOTAL' AS date, 
                                 SUM(order_count) AS order_count, 
                                 SUM(total_sale) AS total_sale 
                          FROM (
@@ -99,6 +99,17 @@ exports.generateReport = async (req, res) => {
                              GROUP BY WEEK(order_date)
                          ) AS week_data`;
                 break;
+                case 'yearly':
+                    query = `SELECT DATE_FORMAT(order_date, '%Y-%m-%d') AS date, 
+                                    COUNT(orders.id) AS order_count, 
+                                    SUM(order_items.quantity * order_items.price) AS total_sale 
+                             FROM orders 
+                             JOIN order_items ON orders.id = order_items.order_id
+                             WHERE YEAR(order_date) = YEAR(CURDATE())
+                             GROUP BY DATE_FORMAT(order_date, '%Y-%m-%d')
+                             ORDER BY DATE_FORMAT(order_date, '%Y-%m-%d')`;
+                    break;
+                                
             case 'custom':
                 query = `SELECT DATE_FORMAT(order_date, '%m/%d/%Y') AS date, 
                                 COUNT(orders.id) AS order_count, 
@@ -108,7 +119,7 @@ exports.generateReport = async (req, res) => {
                          WHERE DATE(order_date) BETWEEN ? AND ?
                          GROUP BY DATE_FORMAT(order_date, '%m/%d/%Y')
                          UNION ALL
-                         SELECT 'WEEK TOTAL' AS date, 
+                         SELECT 'TOTAL' AS date, 
                                 SUM(order_count) AS order_count, 
                                 SUM(total_sale) AS total_sale 
                          FROM (
@@ -151,3 +162,71 @@ exports.generateReport = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
+
+exports.getManageAdminPage = async (req, res) => {
+    try {
+        const [users] = await db.promise().query('SELECT id, username, email, role FROM users WHERE role = "admin"');
+        res.render('manageAdmin', { users });
+    } catch (error) {
+        console.error('Error fetching admin users:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.searchUser = async (req, res) => {
+    const { search } = req.body;
+
+    try {
+        const [users] = await db.promise().query('SELECT id, username, email, role FROM users WHERE username LIKE ?', [`%${search}%`]);
+        res.render('manageAdmin', { users });
+    } catch (error) {
+        console.error('Error searching users:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+exports.getDashboardData = async (req, res) => {
+    try {
+        // Fetch sales data
+        const monthlySales = await Admin.getMonthlySales();
+        const weeklySales = await Admin.getWeeklySales();
+        const dailySales = await Admin.getDailySales();
+        const yearlySales = await Admin.getYearlySales();
+
+        // Get best seller
+        const bestSeller = await Admin.getBestSeller();
+        const bestSellerProduct = await Admin.getBestSellerProduct(bestSeller[0].product_id);
+
+        // Fetch past 7 days' sales data
+        const past7DaysSales = await Admin.getPast7DaysSales();
+        const dates = past7DaysSales.map(sale => sale.date);
+        const sales = past7DaysSales.map(sale => sale.total);
+
+        res.render('admin', {
+            monthlySales: monthlySales[0].total,
+            weeklySales: weeklySales[0].total,
+            dailySales: dailySales[0].total,
+            yearlySales: yearlySales[0].total,
+            bestSeller: bestSellerProduct[0].name,
+            bestSellerImage: bestSellerProduct[0].imageUrl,
+            salesDates: JSON.stringify(dates),
+            salesData: JSON.stringify(sales),
+        });
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        res.status(500).send('Error fetching dashboard data');
+    }
+};
+
+exports.updateUserRole = async (req, res) => {
+    const { userId, role } = req.body;
+
+    try {
+        await db.promise().query('UPDATE users SET role = ? WHERE id = ?', [role, userId]);
+        res.redirect('/manageAdmin');
+    } catch (error) {
+        console.error('Error updating user role:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
