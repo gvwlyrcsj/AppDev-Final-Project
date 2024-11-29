@@ -1,61 +1,71 @@
-<%- include('partials/header') %>   
+<%- include('partials/header') %>
 
-<!-- Header Start -->
-<div class="jumbotron jumbotron-fluid page-header" style="margin-bottom: 90px;">
-    <div class="container text-center py-5">
-        <h1 class="text-white display-3 mt-lg-5">Product</h1>
-        <div class="d-inline-flex align-items-center text-white">
-            <i class="fa fa-circle px-3"></i>
-            <p class="m-0">Product</p>
+<br><br>
+
+<div class="container">
+    <!-- Search bar -->
+    <div class="row">
+        <div class="col-12 mb-3">
+            <input type="text" id="searchBar" placeholder="Search products..." class="form-control" style="width: 300px;">
         </div>
     </div>
-</div>
-<!-- Header End -->
 
-<!-- Products Start -->
-<div class="container">
-    <div class="row">
+    <!-- Product items -->
+    <div class="row" id="productList">
         <% product.forEach(product => { %>
-        <div class="col-lg-3 col-md-6 mb-4 pb-2 d-flex justify-content-center"> <!-- Added 'd-flex' for horizontal alignment -->
-            <div class="product-item d-flex flex-column align-items-center text-center bg-light rounded py-5 px-3">
-                <div class="bg-primary mt-n5 py-3" style="width: 80px;">
-                    <h4 class="font-weight-bold text-white mb-0">$<%= product.price %></h4>
-                </div>
-                <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-3" style="width: 150px; height: 150px;">
-                    <img class="rounded-circle w-100 h-100" src="<%= product.imageUrl %>" style="object-fit: cover;">
-                </div>
-                <h5 class="font-weight-bold mb-4"><%= product.name %></h5>
-
-                <!-- Add to Cart Form -->
-                <form action="/cart/add" method="POST">
-                    <input type="hidden" name="productId" value="<%= product.id %>">
-                    <input type="hidden" name="userId" value="<%= userId %>">
-
-                    <!-- Size Selection -->
-                    <div class="form-group">
-                        <label for="size">Size:</label>
-                        <select class="form-control" name="size" id="size" required>
-                            <option value="small">Small</option>
-                            <option value="medium">Medium</option>
-                            <option value="large">Large</option>
-                            <option value="xl">XL</option>
-                        </select>
+            <a href="/product/<%= product.id %>" class="col-lg-4 col-md-6 mb-5 pb-4 d-flex justify-content-center text-decoration-none text-dark product-item">
+                <div class="product-content d-flex flex-column align-items-center text-center bg-light rounded py-5 px-4" style="width: 100%; max-width: 300px;">
+                    <div class="bg-primary mt-n5 py-3" style="width: 100px;">
+                        <h4 class="font-weight-bold text-white mb-0">₱59</h4> <!-- Hardcode price as 50 -->
                     </div>
-
-                    <!-- Quantity Selection -->
-                    <div class="form-group">
-                        <label for="quantity">Quantity:</label>
-                        <input type="number" class="form-control" name="quantity" id="quantity" min="1" value="1" required>
+                    <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-4" style="width: 180px; height: 180px;">
+                        <img class="rounded-circle w-100 h-100" src="<%= product.imageUrl %>" style="object-fit: cover;">
                     </div>
-
-                    <!-- Order Button -->
-                    <button type="submit" class="btn btn-sm btn-secondary">Order Now</button>
-                </form>
-            </div>
-        </div>
+                    <h5 class="font-weight-bold mb-4 product-name"><%= product.name %></h5>
+                    <% if (product.quantity_in_stock <= 0) { %>
+                        <span class="text-danger font-weight-bold">CURRENTLY UNAVAILABLE</span>
+                    <% } %>
+                </div>
+            </a>
         <% }); %>
     </div>
 </div>
-<!-- Products End -->
 
 <%- include('partials/footer') %>
+
+<!-- JavaScript for search -->
+<script>
+    const searchBar = document.getElementById('searchBar');
+    const productList = document.getElementById('productList');
+
+    searchBar.addEventListener('input', function() {
+        const searchText = this.value;
+
+        // Send AJAX request to the backend with the correct URL
+        fetch(`/product/search?q=${encodeURIComponent(searchText)}`)
+            .then(response => response.json())
+            .then(products => {
+                // Clear current product list
+                productList.innerHTML = '';
+
+                // Populate with new search results
+                products.forEach(product => {
+                    const productHTML = `
+                        <a href="/product/${product.id}" class="col-lg-4 col-md-6 mb-5 pb-4 d-flex justify-content-center text-decoration-none text-dark product-item">
+                            <div class="product-content d-flex flex-column align-items-center text-center bg-light rounded py-5 px-4" style="width: 100%; max-width: 300px;">
+                                <div class="bg-primary mt-n5 py-3" style="width: 100px;">
+                                    <h4 class="font-weight-bold text-white mb-0">₱50</h4> <!-- Hardcode price as 50 -->
+                                </div>
+                                <div class="position-relative bg-primary rounded-circle mt-n3 mb-4 p-4" style="width: 180px; height: 180px;">
+                                    <img class="rounded-circle w-100 h-100" src="${product.imageUrl}" style="object-fit: cover;">
+                                </div>
+                                <h5 class="font-weight-bold mb-4 product-name">${product.name}</h5>
+                            </div>
+                        </a>
+                    `;
+                    productList.insertAdjacentHTML('beforeend', productHTML);
+                });
+            })
+            .catch(error => console.error("Error fetching search results:", error));
+    });
+</script>

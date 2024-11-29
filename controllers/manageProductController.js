@@ -8,48 +8,49 @@ exports.getManageProducts = (req, res) => {
             console.error('Error fetching products:', err);
             return res.status(500).send('Error fetching products');
         }
-        res.render('manageProduct', { products });
+        res.render('manageProduct', {
+            products,
+            userId: res.locals.userId,
+            username: res.locals.username
+        });
     });
 };
 
 // Render the add product form
 exports.getAddProduct = (req, res) => {
-    res.render('addProduct');
+    res.render('addProduct', {
+        userId: res.locals.userId,
+        username: res.locals.username
+    });
 };
 
 // Handle adding a new product
 exports.postAddProduct = (req, res) => {
-    const { name, description, price } = req.body;
-    const image = req.files?.image; // Use optional chaining for safer access
-
-    // Log the inputs received
-    console.log('Adding product:', { name, description, price, image });
+    const { name, description, price, quantity_in_stock, unit } = req.body;
+    const image = req.files?.image;
 
     if (image) {
-        const imageUrl = `/uploads/${image.name}`; // Define imageUrl here
+        const imageUrl = `/uploads/${image.name}`;
         const uploadPath = path.join(__dirname, '../public/uploads', image.name);
 
-        // Move the image to the uploads folder
         image.mv(uploadPath, (error) => {
             if (error) {
-                console.error('Error uploading image:', error); // Log the image upload error
+                console.error('Error uploading image:', error);
                 return res.status(500).send('Error uploading image');
             }
 
-            // Save product details into the database with the image URL
-            Product.create(name, description, price, imageUrl, (error) => { // Removed image.data
+            Product.create(name, description, price, imageUrl, quantity_in_stock, unit, (error) => {
                 if (error) {
-                    console.error('Error adding product to database:', error); // Log the database error
+                    console.error('Error adding product to database:', error);
                     return res.status(500).send('Error adding product');
                 }
                 res.redirect('/manageProduct');
             });
         });
     } else {
-        // Handle case where no image is uploaded
-        Product.create(name, description, price, null, (error) => { // Removed image.data
+        Product.create(name, description, price, null, quantity_in_stock, unit, (error) => {
             if (error) {
-                console.error('Error adding product to database:', error); // Log the database error
+                console.error('Error adding product to database:', error);
                 return res.status(500).send('Error adding product');
             }
             res.redirect('/manageProduct');
@@ -65,25 +66,29 @@ exports.getUpdateProduct = (req, res) => {
         if (error || !product) {
             return res.status(404).send('Product not found');
         }
-        res.render('updateProduct', { product });
+        res.render('updateProduct', {
+            product,
+            userId: res.locals.userId,
+            username: res.locals.username
+        });
     });
 };
 
 // Handle updating an existing product
 exports.postUpdateProduct = (req, res) => {
     const productId = req.params.id;
-    const { name, description, price } = req.body;
+    const { name, description, price, quantity_in_stock, unit } = req.body;
     const image = req.files?.image;
 
     if (image) {
-        const imageUrl = `/uploads/${image.name}`; // Define imageUrl here
+        const imageUrl = `/uploads/${image.name}`;
         const uploadPath = path.join(__dirname, '../public/uploads', image.name);
 
         image.mv(uploadPath, (error) => {
             if (error) {
                 return res.status(500).send('Error uploading image');
             }
-            Product.update(productId, name, description, price, imageUrl, (error) => {
+            Product.update(productId, name, description, price, imageUrl, quantity_in_stock, unit, (error) => {
                 if (error) {
                     return res.status(500).send('Error updating product');
                 }
@@ -91,7 +96,7 @@ exports.postUpdateProduct = (req, res) => {
             });
         });
     } else {
-        Product.update(productId, name, description, price, null, (error) => {
+        Product.update(productId, name, description, price, null, quantity_in_stock, unit, (error) => {
             if (error) {
                 return res.status(500).send('Error updating product');
             }
@@ -109,5 +114,24 @@ exports.deleteProduct = (req, res) => {
             return res.status(500).send('Error deleting product');
         }
         res.redirect('/manageProduct');
+    });
+};
+
+exports.updateProductQuantity = (req, res) => {
+    const productId = req.params.id;
+    const additionalQuantity = parseInt(req.body.quantity);
+
+    Product.findById(productId, (error, product) => {
+        if (error || !product) {
+            return res.status(404).send('Product not found');
+        }
+
+        const newQuantity = product.quantity_in_stock + additionalQuantity;
+        Product.updateQuantity(productId, newQuantity, (error) => {
+            if (error) {
+                return res.status(500).send('Error updating product quantity');
+            }
+            res.send('Product quantity updated successfully');
+        });
     });
 };

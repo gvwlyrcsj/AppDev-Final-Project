@@ -1,18 +1,22 @@
 const express = require('express');
 const router = express.Router();
+const adminController = require('../controllers/adminController');
 
-// Middleware to ensure user is an admin
 const ensureAdmin = (req, res, next) => {
     if (req.session.userId && req.session.role === 'admin') {
-        next(); // User is an admin, proceed to the next middleware
+        next(); // User is admin, allow access
     } else {
-        res.status(403).send('Access Denied'); // User is not an admin, send access denied
+        res.redirect('/sign-in?accessDenied=true'); // Redirect to sign-in with an accessDenied flag
     }
 };
 
-// Route to render admin page
-router.get('/admin', ensureAdmin, (req, res) => {
-    res.render('admin'); // Render the admin page
-});
+router.get('/admin', ensureAdmin, adminController.getDashboardData);
+
+router.get('/report', ensureAdmin, adminController.getReportPage); 
+router.post('/report/generate', ensureAdmin, adminController.generateReport);
+
+router.get('/manageAdmin', ensureAdmin, adminController.getManageAdminPage);
+router.post('/searchUser', ensureAdmin, adminController.searchUser); 
+router.post('/updateUserRole', ensureAdmin, adminController.updateUserRole);
 
 module.exports = router;

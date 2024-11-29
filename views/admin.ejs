@@ -1,125 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <title>i♡milktea</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link rel="stylesheet" href="/public/css/style.css">
-    <meta content="I Love MilkTea" name="I Love MilkTea">
-    <meta content="I Love MilkTea" name="I Love MilkTea">
-
-    <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
-
-    <!-- Custom Styles -->
-    <style>
-    .nav-bar::before {
-        background-color: #00b4d8;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      height: 100vh;
+      background-color: #f4f6f9;
     }
-        .navbar-light .navbar-nav .nav-link:hover,
-        .navbar-light .navbar-nav .nav-link:focus {
-        color: #00b4d8;
+
+    .sidebar {
+      flex: 0 0 250px;
+      background-color: #343a40;
+      color: #fff;
+      padding-top: 20px;
     }
     
-    .bg-primary {
-        background-color: #00b4d8 !important;
+    .sidebar .nav-link {
+      color: #ddd;
+      margin-bottom: 10px;
+    }
+    
+    .sidebar .nav-link:hover {
+      color: #fff;
+      background-color: #495057;
+      border-radius: 4px;
     }
 
-    .btn-secondary {
-        background-color: #00b4d8;
-        border-color: #00b4d8;
+    .content {
+      flex: 1;
+      padding: 40px;
     }
 
-    .btn-secondary:hover {
-        background-color: #00b4d8;
-        border-color: #00b4d8;
+    .sidebar img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
     }
-
-    .btn-outline-light.btn-social:hover {
-        background-color: #00b4d8;
-        border-color: #00b4d8;
-    }
-    </style>
+  </style>
 </head>
-
 <body>
-    <!-- Topbar Start -->
-    <div class="container-fluid bg-primary py-3 d-none d-md-block">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
-                    <div class="d-inline-flex align-items-center">
-                    </div>
-                </div>
-                <div class="col-md-6 text-center text-lg-right">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-white px-3" href="/log-out"></a>
-                    </div>
-                </div>
+  <div class="sidebar">
+    <div class="text-center mb-3">
+      <img src="img/logo.png" alt="Logo">
+    </div>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="/admin"><i class="bi bi-house-door"></i> Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/manageProduct"><i class="bi bi-box"></i> Manage Products</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/orders"><i class="bi bi-cart"></i> Orders</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/report"><i class="bi bi-bar-chart"></i> Report</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/feedback"><i class="bi bi-chat-dots"></i> Feedback</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/manageAdmin"><i class="bi bi-person-check"></i> Manage Admin</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/adminUserProfile"><i class="bi bi-person-circle"></i> Profile</a>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="content">
+    <header class="p-3 bg-primary text-white">
+      <h1>Dashboard</h1>
+    </header>
+  
+    <section class="p-4">
+      <div class="row">
+        <div class="col-md-3 mb-4">
+          <div class="card border-primary shadow-lg">
+            <div class="card-body">
+              <h5 class="card-title text-primary">Daily Sales</h5>
+              <h3 class="card-text">₱<%= dailySales %></h3>
             </div>
+          </div>
         </div>
-    </div>
-    <!-- Topbar End -->
 
-    <!-- Navbar Start -->
-    <div class="container-fluid position-relative nav-bar p-0">
-        <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light shadow p-lg-0">
-                <a href="/" class="navbar-brand d-block d-lg-none">
-                    <h1 class="m-0 display-4 text-primary"><span class="text-secondary">i</span>Love MilkTea</h1>
-                </a>
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-                    <div class="navbar-nav ml-auto py-0">
-                        <a href="/" class="nav-item nav-link active">Dashboard</a>
-                        <a href="/manageProduct" class="nav-item nav-link">Manage Product</a>
-                        <a href="/feedback" class="nav-item nav-link">Feedback</a>
-                    </div>
-                    <a href="/" class="navbar-brand mx-5 d-none d-lg-block">
-                        <h1 class="m-0 display-4 text-primary"><span class="text-secondary">i</span>LoveMilkTea</h1>
-                    </a>
-                    <div class="navbar-nav mr-auto py-0">
-                        <a href="/adminAccount" class="nav-item nav-link">Account</a>
-                        <a href="/sign-in" class="nav-item nav-link">Log Out</a>
-                    </div>
-                </div>
-            </nav>
+        <div class="col-md-3 mb-4">
+          <div class="card border-success shadow-lg">
+            <div class="card-body">
+              <h5 class="card-title text-success">Weekly Sales</h5>
+              <h3 class="card-text">₱<%= weeklySales %></h3>
+            </div>
+          </div>
         </div>
-    </div>
-    <!-- Navbar End -->
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="lib/isotope/isotope.pkgd.min.js"></script>
-    <script src="lib/lightbox/js/lightbox.min.js"></script>
+        <div class="col-md-3 mb-4">
+          <div class="card border-warning shadow-lg">
+            <div class="card-body">
+              <h5 class="card-title text-warning">Monthly Sales</h5>
+              <h3 class="card-text">₱<%= monthlySales %></h3>
+            </div>
+          </div>
+        </div>
 
-    <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
+        <div class="col-md-3 mb-4">
+          <div class="card border-info shadow-lg">
+            <div class="card-body">
+              <h5 class="card-title text-info">Yearly Sales</h5>
+              <h3 class="card-text">₱<%= yearlySales %></h3>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card border-danger shadow-lg">
+            <div class="card-body text-center">
+              <h5 class="card-title text-danger">Best Seller</h5>
+              <h3 class="card-text"><%= bestSeller %></h3>
+              <div class="mt-3">
+                <img src="<%= bestSellerImage %>" alt="Best Seller: <%= bestSeller %>" class="img-fluid rounded" style="width: 150px; height: auto;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-5">
+        <div class="col-12">
+          <div class="card shadow-lg">
+            <div class="card-body">
+              <h5 class="card-title text-center">Income for the Past 7 Days</h5>
+              <canvas id="incomeChart" width="400" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const salesDates = <%- JSON.stringify(salesDates) %>;
+      const salesData = <%- JSON.stringify(salesData) %>;
+
+      const ctx = document.getElementById('incomeChart').getContext('2d');
+      const config = {
+        type: 'bar',
+        data: {
+          labels: salesDates,
+          datasets: [{
+            label: 'Daily Income',
+            data: salesData,
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              'rgba(255, 205, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(201, 203, 207, 0.2)'
+            ],
+            borderColor: [
+              'rgb(255, 99, 132)',
+              'rgb(255, 159, 64)',
+              'rgb(255, 205, 86)',
+              'rgb(75, 192, 192)',
+              'rgb(54, 162, 235)',
+              'rgb(153, 102, 255)',
+              'rgb(201, 203, 207)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      };
+
+      new Chart(ctx, config);
+    });
+  </script>
 </body>
-
 </html>

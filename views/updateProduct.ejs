@@ -1,155 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('partials/adminHeader') %>   
+<div class="container mt-5">
+    <h2>Update Product</h2>
+    <form action="/updateProduct/<%= product.id %>" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" required><%= product.description %></textarea>
+        </div>
+        
+        <div class="mb-3">
+            <label for="price" class="form-label">Price per unit</label>
+            <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" required>
+        </div>
 
-<head>
-    <meta charset="utf-8">
-    <title>i♡milktea</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link rel="stylesheet" href="/css/style.css">
-    <meta content="I Love MilkTea" name="I Love MilkTea">
-    <meta content="I Love MilkTea" name="I Love MilkTea">
-
-    <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
-
-    <!-- Custom Styles -->
-    <style>
-    .nav-bar::before {
-        background-color: #00b4d8;
-    }
-        .navbar-light .navbar-nav .nav-link:hover,
-        .navbar-light .navbar-nav .nav-link:focus {
-        color: #00b4d8;
-    }
-    
-    .bg-primary {
-        background-color: #00b4d8 !important;
-    }
-
-    .btn-secondary {
-        background-color: #00b4d8;
-        border-color: #00b4d8;
-    }
-
-    .btn-secondary:hover {
-        background-color: #00b4d8;
-        border-color: #00b4d8;
-    }
-
-    .btn-outline-light.btn-social:hover {
-        background-color: #00b4d8;
-        border-color: #00b4d8;
-    }
-    </style>
-</head>
-
-<body>
-    <!-- Topbar Start -->
-    <div class="container-fluid bg-primary py-3 d-none d-md-block">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
-                    <div class="d-inline-flex align-items-center">
-                    </div>
-                </div>
-                <div class="col-md-6 text-center text-lg-right">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-white px-3" href="/log-out"></a>
-                    </div>
+        <!-- Quantity in Stock Field -->
+        <div class="mb-3">
+            <label for="quantity_in_stock" class="form-label">Quantity in Stock</label>
+            <div class="input-group">
+                <input type="number" class="form-control" id="quantity_in_stock" name="quantity_in_stock" value="<%= product.quantity_in_stock %>" disabled>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="showAddQuantityModal('<%= product.id %>', '<%= product.quantity_in_stock %>')">+</button>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Topbar End -->
 
-    <!-- Navbar Start -->
-    <div class="container-fluid position-relative nav-bar p-0">
-        <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light shadow p-lg-0">
-                <a href="/" class="navbar-brand d-block d-lg-none">
-                    <h1 class="m-0 display-4 text-primary"><span class="text-secondary">i</span>Love MilkTea</h1>
-                </a>
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
+        <!-- Unit Field -->
+        <div class="mb-3">
+            <label for="unit" class="form-label">Unit</label>
+            <input type="text" class="form-control" id="unit" name="unit" value="<%= product.unit %>" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="image" class="form-label">Upload New Image</label>
+            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Update Product</button>
+        <a href="/manageProduct" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<!-- Add Quantity Modal -->
+<div class="modal fade" id="addQuantityModal" tabindex="-1" role="dialog" aria-labelledby="addQuantityModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addQuantityModalLabel">Add Quantity</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
-                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-                    <div class="navbar-nav ml-auto py-0">
-                        <a href="/" class="nav-item nav-link active">Dashboard</a>
-                        <a href="/manageProduct" class="nav-item nav-link">Manage Product</a>
-                        <a href="/feedback" class="nav-item nav-link">Feedback</a>
+            </div>
+            <div class="modal-body">
+                <form id="addQuantityForm">
+                    <input type="hidden" name="productId" id="productId">
+                    <div class="form-group">
+                        <label for="currentQuantity">Current Quantity</label>
+                        <input type="text" class="form-control" id="currentQuantity" disabled>
                     </div>
-                    <a href="/" class="navbar-brand mx-5 d-none d-lg-block">
-                        <h1 class="m-0 display-4 text-primary"><span class="text-secondary">i</span>LoveMilkTea</h1>
-                    </a>
-                    <div class="navbar-nav mr-auto py-0">
-                        <a href="/adminAccount" class="nav-item nav-link">Account</a>
-                        <a href="/sign-in" class="nav-item nav-link">Log Out</a>
+                    <div class="form-group">
+                        <label for="addQuantity">Add Quantity</label>
+                        <input type="number" class="form-control" id="addQuantity" name="addQuantity" required>
                     </div>
-                </div>
-            </nav>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </div>
         </div>
     </div>
-    <!-- Navbar End -->
+</div>
 
-    <div class="container mt-5">
-        <h2>Update Product</h2>
-        <form action="/updateProduct/<%= product.id %>" method="POST">
-            <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" name="description" required><%= product.description %></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="price" class="form-label">Price</label>
-                <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" required>
-            </div>
-            <div class="mb-3">
-                <label for="imageUrl" class="form-label">Image URL</label>
-                <input type="text" class="form-control" id="imageUrl" name="imageUrl" value="<%= product.imageUrl %>" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Update Product</button>
-            <a href="/manageProduct" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
+<%- include('partials/adminFooter') %>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable
+        $('#productsTable').DataTable({
+            paging: true, 
+            searching: true,
+            ordering: true,
+            order: [[0, 'asc']] // Default order by ID in ascending order
+        });
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="lib/isotope/isotope.pkgd.min.js"></script>
-    <script src="lib/lightbox/js/lightbox.min.js"></script>
+        // Handle form submission with AJAX
+        $('#addQuantityForm').submit(function(event) {
+            event.preventDefault(); // Prevent default form submission
 
-    <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
+            const productId = $('#productId').val();  // Get the productId from the hidden input
+            const addQuantity = $('#addQuantity').val();  // Get the quantity to be added
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
-</body>
+            // Update the AJAX request URL to use the correct endpoint for quantity update
+            $.ajax({
+                url: '/updateProductQuantity/' + productId, // This is your separate route for updating quantity
+                method: 'POST',
+                data: { quantity: addQuantity },
+                success: function(response) {
+                    // Update the quantity in the input field
+                    const currentQuantity = parseInt($('#quantity_in_stock').val()); // Get the current quantity
+                    const newQuantity = currentQuantity + parseInt(addQuantity); // Calculate the new quantity
+                    $('#quantity_in_stock').val(newQuantity); // Update the input field with the new quantity
 
-</html>
+                    // Optionally, you can also update the displayed value elsewhere if needed
+                    $('#currentQuantity').val(newQuantity); // Update the modal to show the new quantity
 
+                    // Hide the modal after updating
+                    $('#addQuantityModal').modal('hide');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error updating product quantity:', error);
+                }
+            });
+        });
+    });
 
-
+    // Show the modal to add quantity
+    function showAddQuantityModal(productId, currentQuantity) {
+        $('#productId').val(productId);
+        $('#currentQuantity').val(currentQuantity); // Ensure this is showing correctly in the modal
+        $('#addQuantityModal').modal('show');  // Make sure the modal shows
+    }
+</script>

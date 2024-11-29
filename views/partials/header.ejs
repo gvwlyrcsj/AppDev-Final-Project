@@ -7,10 +7,10 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link rel="stylesheet" href="/public/css/style.css">
     <meta content="I Love MilkTea" name="I Love MilkTea">
-    <meta content="I Love MilkTea" name="I Love MilkTea">
-
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
     <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
+    <link href="img/logo.png" rel="icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -24,36 +24,42 @@
     <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
 
     <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
 </head>
 
 <body>
-    <!-- Topbar Start -->
+<!-- Topbar Start -->
     <div class="container-fluid bg-primary py-3 d-none d-md-block">
         <div class="container">
             <div class="row">
                 <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
                     <div class="d-inline-flex align-items-center">
-                        <a class="text-white px-3" href="help">Help</a>
+                        <a class="text-white px-3" href="/help">Help</a>
                         <span class="text-white">|</span>
-                        <a class="text-white pl-3" href="faq">FAQs</a>
+                        <a class="text-white pl-3" href="/faq">FAQs</a>
                     </div>
                 </div>
-                <div class="col-md-6 text-center text-lg-right">
+            <div class="col-md-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
                     <div class="d-inline-flex align-items-center">
+                    <% if (username) { %>
+                        <a class="text-white px-3" href="/userProfile/<%= token %>"><%= username %></a>                        <span class="text-white">|</span>
+                        <a class="text-white pl-3" href="/logout">Logout</a>
+                    <% } else { %>
                         <a class="text-white px-3" href="/sign-up">Sign Up</a>
                         <span class="text-white">|</span>
                         <a class="text-white pl-3" href="/sign-in">Login</a>
-                    </div>
+                    <% } %>
                 </div>
+                </div>
+            </div>
             </div>
         </div>
     </div>
-    
-    <!-- Topbar End -->
+<!-- Topbar End -->
 
 
-    <!-- Navbar Start -->
+<!-- Navbar Start -->
     <div class="container-fluid position-relative nav-bar p-0">
         <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
             <nav class="navbar navbar-expand-lg bg-white navbar-light shadow p-lg-0">
@@ -67,6 +73,7 @@
                     <div class="navbar-nav ml-auto py-0">
                         <a href="/about" class="nav-item nav-link active">About</a>
                         <a href="/product" class="nav-item nav-link">Product</a>
+                        <a href="/Cart" class="nav-item nav-link">Cart</a>
                     </div>
                     <a href="/" class="navbar-brand mx-5 d-none d-lg-block">
                         <h1 class="m-0 display-4 text-primary"><span class="text-secondary">i</span>LoveMilkTea</h1>
@@ -80,4 +87,4 @@
             </nav>
         </div>
     </div>
-    <!-- Navbar End -->
+<!-- Navbar End -->

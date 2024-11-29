@@ -1,245 +1,207 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('partials/headerr') %>
 
-<head>
-    <meta charset="utf-8">
-    <title>User Profile - I Love MilkTea</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Milk Tea, User Profile" name="keywords">
-    <meta content="User profile page for I Love MilkTea" name="description">
+<div class="container d-flex justify-content-center">
+    <div class="profile-container" style="width: 100%; max-width: 800px;">
+        <div class="profile-header text-center my-4">
+            <h1>Edit Profile</h1>
+            <p>Update your account settings</p>
+        </div>
 
-    <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
+        <div class="text-center mb-4">
+            <img src="<%= profile.profile_picture || '/path/to/default-picture.jpg' %>"
+                 alt="Profile Picture"
+                 class="rounded-circle"
+                 style="width: 150px; height: 150px; object-fit: cover;">
+        </div>
+            
+        <form action="/userProfile/upsert" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="userId" value="<%= user.id %>">
 
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f9f9f9;
-        }
-
-        .container {
-            margin-top: 30px;
-        }
-
-        .profile-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .profile-header h1 {
-            color: #d63384; /* Pink color */
-        }
-
-        .profile-card {
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .profile-card h4 {
-            color: #d63384; /* Pink color */
-        }
-
-        .order-history {
-            margin-top: 40px;
-        }
-
-        .order-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .order-table th,
-        .order-table td {
-            padding: 10px;
-            border: 1px solid #e0e0e0;
-            text-align: left;
-        }
-
-        .order-table th {
-            background-color: #f2f2f2;
-        }
-
-        .settings {
-            margin-top: 40px;
-        }
-
-        .settings button {
-            background-color: #d63384;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .settings button:hover {
-            background-color: #c52f73;
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Topbar Start -->
-    <div class="container-fluid bg-primary py-3 d-none d-md-block">
-        <div class="container">
             <div class="row">
-                <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-white pr-3" href="/userProfile">Profile</a>
-                        <span class="text-white">|</span>
-                        <a class="text-white px-3" href="/help">Help</a>
-                        <span class="text-white">|</span>
-                        <a class="text-white pl-3" href="/faq">FAQs</a>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="profile_picture">Profile Picture:</label>
+                        <input type="file" class="form-control" name="profile_picture" id="profile_picture" accept="image/*">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" class="form-control" name="username" id="username" value="<%= user.username %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" class="form-control" name="name" id="name" value="<%= profile.name || '' %>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" name="email" id="email" value="<%= user.email %>" required>
                     </div>
                 </div>
-                <div class="col-md-6 text-center text-lg-right">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-white px-3" href="">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a class="text-white px-3" href="">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a class="text-white px-3" href="">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a class="text-white px-3" href="">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a class="text-white pl-3" href="">
-                            <i class="fab fa-youtube"></i>
-                        </a>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="birthday">Birthday:</label>
+                        <input type="date" class="form-control" name="birthday" id="birthday" value="<%= profile.birthday ? profile.birthday.toISOString().split('T')[0] : '' %>" required onchange="calculateAge()">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="text" class="form-control" name="age" id="age" value="<%= profile.age || '' %>" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="tel" class="form-control" name="phone" id="phone" value="<%= profile.phone || '' %>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">Gender:</label>
+                        <select class="form-control" name="gender" id="gender">
+                            <option value="" disabled selected>Select your gender</option>
+                            <option value="male" <%= profile.gender === 'male' ? 'selected' : '' %>>Male</option>
+                            <option value="female" <%= profile.gender === 'female' ? 'selected' : '' %>>Female</option>
+                        </select>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <!-- Topbar End -->
-
-    <!-- Navbar Start -->
-    <div class="container-fluid position-relative nav-bar p-0">
-        <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light shadow p-lg-0">
-                <a href="/" class="navbar-brand d-block d-lg-none">
-                    <h1 class="m-0 display-4 text-primary"><span class="text-secondary">I</span> Love MilkTea</h1>
-                </a>
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-                    <div class="navbar-nav ml-auto py-0">
-                        <a href="/" class="nav-item nav-link">Home</a>
-                        <a href="/about" class="nav-item nav-link">About</a>
-                        <a href="/product" class="nav-item nav-link">Product</a>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="street_name">Street Name:</label>
+                        <input type="text" class="form-control" name="street_name" id="street_name" value="<%= profile.street_name || '' %>">
                     </div>
-                    <a href="/" class="navbar-brand mx-5 d-none d-lg-block">
-                        <h1 class="m-0 display-4 text-primary"><span class="text-secondary">I</span> Love MilkTea</h1>
-                    </a>
-                    <div class="navbar-nav mr-auto py-0">
-                        <a href="/service" class="nav-item nav-link">Service</a>
-                        <a href="/gallery" class="nav-item nav-link">Gallery</a>
-                        <a href="/contact" class="nav-item nav-link">Contact</a>
+            
+                    <div class="form-group">
+                        <label for="city">City:</label>
+                        <select class="form-control" name="city" id="city" required>
+                            <option value="" disabled selected>Select your city</option>
+                            <option value="calapan" <%= profile.city === 'calapan' ? 'selected' : '' %>>Calapan</option>
+                            <option value="baco" <%= profile.city === 'baco' ? 'selected' : '' %>>Baco</option>
+                            <option value="bansud" <%= profile.city === 'bansud' ? 'selected' : '' %>>Bansud</option>
+                            <option value="bongabong" <%= profile.city === 'bongabong' ? 'selected' : '' %>>Bongabong</option>
+                            <option value="bulalacao" <%= profile.city === 'bulalacao' ? 'selected' : '' %>>Bulalacao</option>
+                            <option value="mansalay" <%= profile.city === 'mansalay' ? 'selected' : '' %>>Mansalay</option>
+                            <option value="naujan" <%= profile.city === 'naujan' ? 'selected' : '' %>>Naujan</option>
+                            <option value="pinamalayan" <%= profile.city === 'pinamalayan' ? 'selected' : '' %>>Pinamalayan</option>
+                            <option value="pola" <%= profile.city === 'pola' ? 'selected' : '' %>>Pola</option>
+                            <option value="puertoGalera" <%= profile.city === 'puertoGalera' ? 'selected' : '' %>>Puerto Galera</option>
+                            <option value="roxas" <%= profile.city === 'roxas' ? 'selected' : '' %>>Roxas</option>
+                            <option value="sanTeodoro" <%= profile.city === 'sanTeodoro' ? 'selected' : '' %>>San Teodoro</option>
+                            <option value="socorro" <%= profile.city === 'socorro' ? 'selected' : '' %>>Socorro</option>
+                            <option value="victoria" <%= profile.city === 'victoria' ? 'selected' : '' %>>Victoria</option>
+                        </select>                
                     </div>
                 </div>
-            </nav>
-        </div>
-    </div>
-    <!-- Navbar End -->
-
-    <!-- Profile Header Start -->
-    <div class="container">
-        <div class="profile-header">
-            <h1>User Profile</h1>
-            <p>Manage your account settings and view your order history</p>
-        </div>
-        <!-- Profile Information Start -->
-        <div class="profile-card">
-            <h4>Profile Information</h4>
-            <p><strong>Name:</strong> John Doe</p>
-            <p><strong>Email:</strong> johndoe@example.com</p>
-            <p><strong>Phone:</strong> +63 912 345 6789</p>
-            <p><strong>Address:</strong> 123 MilkTea St., Calapan, Philippines</p>
-        </div>
-        <!-- Profile Information End -->
-
-        <!-- Order History Start -->
-        <div class="order-history">
-            <div class="profile-card">
-                <h4>Order History</h4>
-                <table class="order-table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Order Date</th>
-                            <th>Status</th>
-                            <th>Total Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>#001</td>
-                            <td>2024-09-15</td>
-                            <td>Delivered</td>
-                            <td>₱150.00</td>
-                        </tr>
-                        <tr>
-                            <td>#002</td>
-                            <td>2024-09-20</td>
-                            <td>In Progress</td>
-                            <td>₱250.00</td>
-                        </tr>
-                        <tr>
-                            <td>#003</td>
-                            <td>2024-09-25</td>
-                            <td>Delivered</td>
-                            <td>₱120.00</td>
-                        </tr>
-                    </tbody>
-                </table>
+            
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="barangay">Barangay:</label>
+                        <select class="form-control" name="barangay" id="barangay" required>
+                            <option value="" disabled>Select your barangay</option>
+                            <% if (barangays[profile.city]) { %>
+                                <% barangays[profile.city].forEach((b) => { %>
+                                    <option value="<%= b %>" <%= b === profile.barangay ? 'selected' : '' %>><%= b %></option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="zip_code">Zip Code:</label>
+                        <input type="text" class="form-control" name="zip_code" id="zip_code" value="<%= profile.zip_code || '' %>">
+                    </div>                   
+                </div>
+            </div>
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-primary flex-grow-1" style="margin-right: 10px;">Save Profile</button>
             </div>
         </div>
-        <!-- Order History End -->
-
-        <!-- Account Settings Start -->
-        <div class="settings">
-            <div class="profile-card">
-                <h4>Account Settings</h4>
-                <button onclick="window.location.href='edit-profile.html'">Edit Profile</button>
-                <button onclick="window.location.href='change-password.html'">Change Password</button>
-            </div>
-        </div>
-        <!-- Account Settings End -->
     </div>
-    <!-- Profile Header End -->
+</div>
 
-    <!-- Footer Start -->
-    <div class="container-fluid bg-primary text-white mt-5 py-4">
-        <div class="container text-center">
-            <p class="mb-0">&copy; 2024 I Love MilkTea. All Rights Reserved.</p>
-        </div>
-    </div>
-    <!-- Footer End -->
+<%- include('partials/footer') %>
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script>
+    const barangays = {
+        calapan: ["Balingayan", "Balite", "Baruyan", "Batino", "Bayanan I", "Bayanan II", "Biga", "Bondoc", "Bucayao",
+            "Buhuan", "Bulusan", "Calero", "Camansihan", "Camilmil", "Canubing I", "Canubing II", "Comunal",
+            "Guinobatan", "Gulod", "Gutad", "Ibaba East", "Ibaba West", "Ilaya", "Lalud", "Lazareto", "Libis",
+            "Lumangbayan", "Mahal Na Pangalan", "Maidlang", "Malad", "Malamig", "Managpi", "Masipit", "Nag-Iba I",
+            "Nag-Iba II", "Navotas", "Pachoca", "Palhi", "Panggalaan", "Parang", "Patas", "Personas", "Puting Tubig",
+            "San Antonio", "San Rafael (formerly Salong)", "San Vicente Central", "San Vicente East", "San Vicente North",
+            "San Vicente South", "San Vicente West", "Sapul", "Silonay", "Santa Cruz", "Santa Isabel", "Santa Maria Village",
+            "Santa Rita", "Santo Niño", "Suqui", "Tawagan", "Tawiran", "Tibag", "Wawa"],
+        baco: ["Alag", "Bangkatan", "Baras (Mangyan Minority)", "Bayanan", "Burbuli", "Dulangan I", "Dulangan II", 
+            "Katuwiran I", "Katuwiran II", "Lantuyang (Mangyan Minority)", "Lumangbayan", "Malapad", "Mangangan I", 
+            "Mangangan II", "Mayabig", "Pambisan", "Poblacion", "Pulantubig", "PuticanCabulo", "San Andres", 
+            "San Ignacio", "Santa Cruz", "Santa Rosa I", "Santa Rosa II", "TabonTabon", "Tagumpay", "Water"],
+        bansud: ["Antipolo", "Aras-asan", "Bagumbayan", "Balay", "Bayan ng Bansud", "Cabangahan", "Dampulan", 
+            "Kalingatan", "Mababang Bato", "Magsaysay", "Managpi", "Napangan", "Pabilaan", "Poblacion", "Tagumpay"],
+        bongabong: ["Alag", "Bagumbayan", "Balay", "Bayanan", "Bignay", "Bongabong Proper", "Lalud", 
+            "Masaguitsit", "Marayag", "Mabanglas", "Mangyan", "Malunod", "Palhuan", "Poblacion", "San Isidro", "San Jose"],
+        bulalacao: ["Balcasan", "Bamboo", "Buli", "Bulalacao", "Dawis", "Dela Paz", "Gintong Silangan", 
+            "Hindang", "Ibayug", "Kalapagan", "Katribo", "Lamon", "Libas", "Lunhaw", "Mapagkumbaba", "Nag-iba", "Poblacion"],
+        mansalay: ["Bagumbayan", "Bansud", "Bongabong", "Bubog", "Caguya", "Canas", "Canubing", "Dumantay", 
+            "Gulod", "Mansalay", "Mapagkumbaba", "Poblacion", "San Antonio", "San Isidro"],
+        naujan: ["Bagumbayan", "Bangas", "Barangan", "Buhay", "Dugay", "Isabang", "Ibabang I", "Ibabang II", 
+            "Lagan", "Lapidan", "Maguin", "Marayag", "Mauway", "Muntinlupa", "Poblacion", "Punduhan"],
+        pinamalayan: ["Bagong Silang", "Bagumbayan", "Bansud", "Bongabong", "Calapan", "Calavite", "Dumantay", 
+            "Liitan", "Manganga", "Poblacion", "Pula", "San Vicente", "Silan", "Tabing Ilog"],
+        pola: ["Bagumbayan", "Baras", "Bato", "Boton", "Bugtong na Bato", "Dulongbayan", "Ilog", "Kapatagan", 
+            "Masaguitsit", "Mina", "Mundang", "Pagsanjan", "Palahang", "Poblacion", "Tabing Ilog", "Tagumpay"],
+        puertogalera: ["Bagumbayan", "Banilad", "Bayanan", "Bongabong", "Buli", "Calapan", "Dulangan", "Katuwiran", 
+            "Lagnas", "Mabuhay", "Manatad", "Manuel I", "Panganiban", "Poblacion", "San Antonio", "San Isidro"],
+        roxas: ["Antipolo", "Bailan", "Bunga", "Manga", "Manggahan", "Mapagkumbaba", "Poblacion", "San Juan", "Tabon"],
+        santeodoro: ["Antipolo", "Bagumbayan", "Bingag", "Buli", "Concepcion", "Dapdap", "Del Pilar", "Katuwiran", 
+            "Mahayag", "Magsaysay", "Malinao", "Marakitan", "Poblacion", "San Juan", "Santo Niño"],
+        socorro: ["Antipolo", "Batsanga", "Bagumbayan", "Buhay", "Concepcion", "Dolores", "Ibaba", "Kapatagan", 
+            "Maguin", "Malalim", "Manatad", "Poblacion", "Pulang Lupa"],
+        victoria: ["Bagumbayan", "Baras", "Buli", "Calero", "Cugman", "Del Pilar", "Dulangan", "Ibaba", 
+            "Manuel L. Quezon", "Marina", "Nag-Iba", "Nampicuan", "Poblacion"]
+    };
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
-</body>
+    // Populate barangays based on city selection
+    document.getElementById('city').addEventListener('change', function () {
+        const selectedCity = this.value;
+        const barangaySelect = document.getElementById('barangay');
 
-</html>
+        // Clear barangay options
+        barangaySelect.innerHTML = '<option value="" disabled>Select your barangay</option>';
+
+        // Populate barangays based on selected city
+        if (barangays[selectedCity]) {
+            barangays[selectedCity].forEach(function (barangay) {
+                const option = document.createElement('option');
+                option.value = barangay;
+                option.textContent = barangay;
+                barangaySelect.appendChild(option);
+            });
+        }
+    });
+
+    document.getElementById('order-history-button').addEventListener('click', () => {
+        window.location.href = '/orderHistory';  
+    });
+
+
+    // Calculate age based on birthday
+    function calculateAge() {
+        const birthdayInput = document.getElementById('birthday');
+        const ageInput = document.getElementById('age');
+        
+        if (birthdayInput.value) {
+            const today = new Date();
+            const birthDate = new Date(birthdayInput.value);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            ageInput.value = age;
+        }
+    }
+</script>
