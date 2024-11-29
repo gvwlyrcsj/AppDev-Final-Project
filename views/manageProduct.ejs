@@ -1,88 +1,225 @@
-<%- include('partials/adminHeader') %>
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="container mt-5">
-    <h2>Manage Products</h2>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Products</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      height: 100vh;
+      flex-direction: row;
+      background-color: #f4f6f9;
+    }
 
-    <!-- Notifications for Low Stock -->
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #343a40;
+      color: #fff;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar .nav-link {
+      color: #ddd;
+      margin-bottom: 10px;
+    }
+
+    .sidebar .nav-link:hover {
+      color: #fff;
+      background-color: #495057;
+      border-radius: 4px;
+    }
+
+    .sidebar img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .content {
+      margin-left: 250px;
+      padding: 40px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 200px;
+      }
+
+      .content {
+        margin-left: 200px;
+      }
+    }
+
+    h2 {
+      color: #34495e;
+    }
+
+    .alert {
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background-color: #3498db;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #2980b9;
+    }
+
+    /* Table Styling */
+    #productsTable {
+      font-size: 14px;
+    }
+
+    thead {
+      background-color: #34495e;
+      color: white;
+    }
+
+    tbody tr.table-danger {
+      background-color: #f8d7da;
+    }
+
+    tbody tr:hover {
+      background-color: #ecf0f1;
+    }
+
+    .table th,
+    .table td {
+      vertical-align: middle;
+    }
+
+    .table td img {
+      width: 100px;
+      height: auto;
+      border-radius: 5px;
+    }
+
+    .table td .btn {
+      font-size: 14px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="text-center mb-3">
+      <img src="img/logo.png" alt="Logo">
+    </div>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="/admin"><i class="bi bi-house-door"></i> Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/manageProduct"><i class="bi bi-box"></i> Manage Products</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/orders"><i class="bi bi-cart"></i> Orders</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/report"><i class="bi bi-bar-chart"></i> Report</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/feedback"><i class="bi bi-chat-dots"></i> Feedback</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/manageAdmin"><i class="bi bi-person-check"></i> Manage Admin</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/adminUserProfile"><i class="bi bi-person-circle"></i> Profile</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="content">
+    <header class="p-3 bg-primary text-white">
+        <h1>Manage Products</h1>
+    </header>
+  <!-- Notifications -->
     <div id="notification-container">
-        <% products.forEach((product) => { %>
-        <% if (product.quantity_in_stock < 100) { %>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            Warning: Low stock for product <strong><%= product.name %></strong> (ID: <%= product.id %>).
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <% } %>
-        <% }) %>
+      <% products.forEach((product) => { %>
+      <% if (product.quantity_in_stock < 100) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        Warning: Low stock for product <strong><%= product.name %></strong> (ID: <%= product.id %>).
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <% } %>
+      <% }) %>
     </div>
 
     <!-- Add Product Button -->
     <div class="mb-3">
-        <a href="/addProduct" class="btn btn-primary">Add Product</a>
+      <a href="/addProduct" class="btn btn-primary">Add Product</a>
     </div>
 
     <!-- Products Table -->
     <table id="productsTable" class="table table-striped table-bordered">
-        <thead class="bg-secondary text-white">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Quantity in Stock</th>
-                <th>Unit</th>
-                <th>Image</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% products.forEach((product) => { %>
-            <tr class="<%= product.quantity_in_stock < 100 ? 'table-danger' : '' %>">
-                <td><%= product.id %></td>
-                <td><%= product.name %></td>
-                <td><%= product.description %></td>
-                <td>₱<%= product.price %></td>
-                <td><%= product.quantity_in_stock %></td>
-                <td><%= product.unit %></td>
-                <td>
-                    <% if (product.imageUrl) { %>
-                    <img src="<%= product.imageUrl %>" alt="<%= product.name %>" style="width: 100px; height: auto;">
-                    <% } else { %>
-                    No image
-                    <% } %>
-                </td>
-                <td>
-                    <a href="/updateProduct/<%= product.id %>" class="btn btn-primary btn-sm">Edit</a>
-                    </a>
-                </td>
-            </tr>
-            <% }) %>
-        </tbody>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Price</th>
+          <th>Quantity in Stock</th>
+          <th>Unit</th>
+          <th>Image</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach((product) => { %>
+        <tr class="<%= product.quantity_in_stock < 100 ? 'table-danger' : '' %>">
+          <td><%= product.id %></td>
+          <td><%= product.name %></td>
+          <td><%= product.description %></td>
+          <td>₱<%= product.price %></td>
+          <td><%= product.quantity_in_stock %></td>
+          <td><%= product.unit %></td>
+          <td>
+            <% if (product.imageUrl) { %>
+            <img src="<%= product.imageUrl %>" alt="<%= product.name %>">
+            <% } else { %>
+            No image
+            <% } %>
+          </td>
+          <td>
+            <a href="/updateProduct/<%= product.id %>" class="btn btn-primary">Edit</a>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
     </table>
-</div>
+  </div>
 
-<%- include('partials/adminFooter') %>
-
-<!-- DataTables CSS and JS Libraries -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-
-<!-- Custom CSS -->
-<style>
-    .low-stock {
-        background-color: #f8d7da; /* Light red color */
-    }
-</style>
-
-<script>
-    $(document).ready(function() {
-        // Initialize DataTable
-        $('#productsTable').DataTable({
-            paging: true, // Enable pagination
-            searching: true, // Enable searching/filtering
-            ordering: true, // Enable column ordering
-            order: [[0, 'asc']] // Default order by ID in ascending order
-        });
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      $('#productsTable').DataTable();
     });
-</script>
+  </script>
+</body>
+
+</html>

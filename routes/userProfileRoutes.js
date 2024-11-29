@@ -13,6 +13,11 @@ router.get('/:token', isAuthenticated, userProfileController.getUserProfileById)
 
 router.post('/upsert', isAuthenticated, userProfileController.upsertProfile);
 
+router.get('/:token', isAuthenticated, userProfileController.getUserProfileById);
+
+router.post('/upsert', isAuthenticated, userProfileController.upsertProfile);
+
+
 router.get('/checkoutSuccess', (req, res) => {
     res.render('checkoutSuccess'); 
 });

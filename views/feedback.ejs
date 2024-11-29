@@ -1,51 +1,164 @@
-<%- include('partials/adminHeader') %>   
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f6f9;
+    }
 
-<!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    /* Sidebar Styling */
+    .sidebar {
+      flex: 0 0 250px; /* Flex property to allow resizing */
+      height: 100vh; /* Full height */
+      background-color: #343a40;
+      color: #fff;
+      padding-top: 20px;
+    }
+    .sidebar .nav-link {
+      color: #ddd;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #495057;
+      color: #fff;
+    }
+    .content {
+      flex-grow: 1; /* Flex property to take the remaining space */
+      padding: 40px;
+      background-color: #f8f9fa; /* Light background for content */
+    }
+    .sidebar img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+    }
+    .d-flex {
+      min-height: 100vh; /* Ensure the container takes up the full height of the viewport */
+    }
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">All Contact Queries</h2>
+    /* Table Styling */
+    table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    table th, table td {
+      text-align: center;
+      padding: 12px 15px;
+      border: 1px solid #dee2e6;
+    }
+    table th {
+      background-color: #007bff;
+      color: white;
+    }
+    table tbody tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    table tbody tr:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
 
-    <!-- Contact Queries Table -->
-    <table id="contactQueriesTable" class="table table-bordered">
-        <thead>
+    /* Card Header */
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 5px 5px 0 0;
+    }
+  </style>
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+</head>
+<body>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="text-center mb-3">
+          <img src="img/logo.png" alt="Logo">
+        </div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="/admin"><i class="bi bi-house-door"></i> Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/manageProduct"><i class="bi bi-box"></i> Manage Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/orders"><i class="bi bi-cart"></i> Orders</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/report"><i class="bi bi-bar-chart"></i> Report</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/feedback"><i class="bi bi-chat-dots"></i> Feedback</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/manageAdmin"><i class="bi bi-person-check"></i> Manage Admin</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/adminUserProfile"><i class="bi bi-person-circle"></i> Profile</a>
+          </li>
+        </ul>
+      </nav>
+  
+    <!-- Main Content -->
+    <div class="content">
+      <header>
+        <h1>Feedback</h1>
+      </header>
+      <div class="container mt-5">
+        <!-- Contact Queries Table -->
+        <table id="contactQueriesTable" class="table table-bordered">
+          <thead>
             <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Subject</th>
-                <th>Message</th>
-                <th>Created At</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Subject</th>
+              <th>Message</th>
+              <th>Created At</th>
             </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
             <% contacts.forEach(contact => { %>
-                <tr>
-                    <td><%= contact.name %></td>
-                    <td><%= contact.email %></td>
-                    <td><%= contact.subject %></td>
-                    <td><%= contact.message %></td>
-                    <td><%= new Date(contact.created_at).toLocaleString() %></td>
-                </tr>
+            <tr>
+              <td><%= contact.name %></td>
+              <td><%= contact.email %></td>
+              <td><%= contact.subject %></td>
+              <td><%= contact.message %></td>
+              <td><%= new Date(contact.created_at).toLocaleString() %></td>
+            </tr>
             <% }) %>
-        </tbody>
-    </table>
-</div>
-
-<%- include('partials/adminFooter') %>
-
-<!-- jQuery and DataTables JS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <script>
     $(document).ready(function() {
-        // Initialize DataTable with pagination, sorting, and responsive options
-        $('#contactQueriesTable').DataTable({
-            "paging": true,       // Enable pagination
-            "searching": true,    // Enable search functionality
-            "ordering": true,     // Enable sorting on columns
-            "pageLength": 10,     // Default rows per page
-            "order": [[4, "desc"]], // Order by 'Created At' in descending order
-            "responsive": true     // Optional: makes table responsive
-        });
+      // Initialize DataTable with pagination, sorting, and responsive options
+      $('#contactQueriesTable').DataTable({
+        "paging": true,       // Enable pagination
+        "searching": true,    // Enable search functionality
+        "ordering": true,     // Enable sorting on columns
+        "pageLength": 10,     // Default rows per page
+        "order": [[4, "desc"]], // Order by 'Created At' in descending order
+        "responsive": true     // Optional: makes table responsive
+      });
     });
-</script>
+  </script>
+</body>
+</html>
